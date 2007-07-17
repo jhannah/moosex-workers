@@ -1,4 +1,4 @@
-use Test::More no_plan => 1;
+use Test::More plan => 6;
 use lib qw(lib);
 
 {
@@ -15,14 +15,22 @@ use lib qw(lib);
         ::pass('stopped worker manager');
     }
 
-    sub worker_output {
+    sub worker_stdout {
         my ( $self, $output ) = @_;
-        ::pass($output);
+        ::is( $output, 'HELLO' );
     }
 
+    sub worker_stderr {
+        my ( $self, $output ) = @_;
+        ::is( $output, 'WORLD' );
+    }
+    sub worker_error {  }
+    sub worker_done  { ::pass('worker done') }
+
+    sub worker_started { ::pass('worker started') }
     no Moose;
 }
 
 my $m = Manager->new();
-$m->run_command( sub { print "Testing\n" } );
+$m->run_command( sub { print "HELLO\n"; print STDERR "WORLD\n" } );
 POE::Kernel->run();

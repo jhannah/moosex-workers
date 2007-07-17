@@ -64,7 +64,7 @@ sub add_worker {
     my ( $self, $command ) = @_[ OBJECT, ARG0 ];
     my $wheel = POE::Wheel::Run->new(
         Program     => $command,
-        StdoutEvent => '_worker_stdout ',
+        StdoutEvent => '_worker_stdout',
         StderrEvent => '_worker_stderr',
         ErrorEvent  => '_worker_error',
         CloseEvent  => '_worker_done',
@@ -87,6 +87,7 @@ sub _stop {
 
 sub _worker_stdout {
     my ($self) = $_[OBJECT];
+    warn $_[ARG0];
     $self->visitor->worker_stdout( @_[ ARG0, ARG1 ] );    # $input, $wheel_id
 }
 
