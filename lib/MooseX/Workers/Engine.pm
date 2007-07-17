@@ -10,6 +10,12 @@ has visitor => (
     does     => 'MooseX::Workers',
 );
 
+has max_workers => (
+    isa     => 'Int',
+    is      => 'ro',
+    default => sub { 5 },
+);
+
 has workers => (
     isa       => 'HashRef',
     is        => 'rw',
@@ -62,6 +68,12 @@ sub yield {
 
 sub add_worker {
     my ( $self, $command ) = @_[ OBJECT, ARG0 ];
+    # if we've reached the worker threashold, set off a warning
+    if ( $self->num_workers >= $self->max_workers ) {
+        $self->visitor->max_workers_reached($command);
+        return;
+    }
+
     my $wheel = POE::Wheel::Run->new(
         Program     => $command,
         StdoutEvent => '_worker_stdout',
@@ -71,7 +83,7 @@ sub add_worker {
     );
     $self->set_worker( $wheel->ID => $wheel );
     $self->visitor->worker_started( $wheel->ID => $command );
-
+    return 1;
 }
 
 sub _start {

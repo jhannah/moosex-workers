@@ -10,6 +10,13 @@ has Engine => (
     lazy     => 1,
     required => 1,
     default  => sub { MooseX::Workers::Engine->new( visitor => $_[0] ) },
+    handles => [
+        qw(
+          max_workers
+          has_workers
+          num_workers
+          )
+    ],
 );
 
 sub run_command {
@@ -17,8 +24,17 @@ sub run_command {
     $self->Engine->yield( add_worker => $cmd );
 }
 
+sub check_worker_threashold { 
+    return $_[0]->num_workers >= $_[0]->max_workers; 
+}
+
+#
+# INTERFACE
+#
+
 sub worker_manager_start { warn 'started worker manager' }
 sub worker_manager_stop  { warn 'stopped worker manager' }
+sub max_workers_reached  { warn 'maximum worker count reached' }
 
 sub worker_stdout { shift; warn join ' ', @_; }
 sub worker_stderr { shift; warn join ' ', @_; }
