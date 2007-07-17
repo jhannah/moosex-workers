@@ -1,4 +1,4 @@
-use Test::More plan => 6;
+use Test::More tests => 6;
 use lib qw(lib);
 
 {
