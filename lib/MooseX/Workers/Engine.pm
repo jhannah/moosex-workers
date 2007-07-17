@@ -93,14 +93,14 @@ sub _worker_stdout {
 sub _worker_stderr {
     my ($self) = $_[OBJECT];
     $_[ARG1] =~ tr[ -~][]cd;
-    $self->visitor->worker_stdout( @_[ ARG0, ARG1 ] );    # $input, $wheel_id
+    $self->visitor->worker_stderr( @_[ ARG0, ARG1 ] );    # $input, $wheel_id
 }
 
 sub _worker_error {
     my ($self) = $_[OBJECT];
 
     # $operation, $errnum, $errstr, $wheel_id
-    $self->visitor->worker_stdout( @_[ ARG0 .. ARG3 ] );
+    $self->visitor->worker_error( @_[ ARG0 .. ARG3 ] );
 }
 
 sub _worker_done {
