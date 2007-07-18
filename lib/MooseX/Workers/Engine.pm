@@ -36,7 +36,7 @@ has session => (
     isa      => 'POE::Session',
     is       => 'ro',
     required => 1,
-    weaken   => 1,
+    lazy => 1,
     default  => sub {
         POE::Session->create(
             object_states => [
@@ -48,13 +48,15 @@ has session => (
                       _worker_stderr
                       _worker_error
                       _worker_done
+                      _sig_child
                       add_worker
                       )
                 ],
             ],
         );
     },
-    clearer => 'clear_session',
+    clearer => 'remove_manager',
+    predicate => 'has_session',
 );
 
 sub yield {
@@ -68,6 +70,7 @@ sub yield {
 
 sub add_worker {
     my ( $self, $command ) = @_[ OBJECT, ARG0 ];
+
     # if we've reached the worker threashold, set off a warning
     if ( $self->num_workers >= $self->max_workers ) {
         $self->visitor->max_workers_reached($command);
@@ -89,12 +92,19 @@ sub add_worker {
 sub _start {
     my ($self) = $_[OBJECT];
     $self->visitor->worker_manager_start();
+    $_[KERNEL]->sig( CHLD => '_sig_child' );
 }
 
 sub _stop {
     my ($self) = $_[OBJECT];
     $self->visitor->worker_manager_stop();
-    $self->clear_session;
+    $self->remove_manager;
+}
+
+sub _sig_child {
+    my ($self) = $_[OBJECT];
+    $self->visitor->sig_child( @_[ ARG0 .. ARG2 ] );    # $PID, $ret
+    #$_[KERNEL]->signal_handled;
 }
 
 sub _worker_stdout {
