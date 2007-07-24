@@ -12,7 +12,7 @@ has visitor => (
 
 has max_workers => (
     isa     => 'Int',
-    is      => 'ro',
+    is      => 'rw',
     default => sub { 5 },
 );
 
