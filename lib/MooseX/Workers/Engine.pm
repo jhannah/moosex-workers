@@ -109,7 +109,6 @@ sub _sig_child {
 
 sub _worker_stdout {
     my ($self) = $_[OBJECT];
-    warn $_[ARG0];
     $self->visitor->worker_stdout( @_[ ARG0, ARG1 ] );    # $input, $wheel_id
 }
 
