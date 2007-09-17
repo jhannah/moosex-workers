@@ -1,8 +1,9 @@
 package MooseX::Workers;
 use strict;
+our $VERSION = 0.01;
+
 use Moose::Role;
 use MooseX::Workers::Engine;
-our $VERSION = 0.01;
 
 has Engine => (
     isa      => 'MooseX::Workers::Engine',
@@ -28,20 +29,6 @@ sub check_worker_threashold {
     return $_[0]->num_workers >= $_[0]->max_workers;
 }
 
-#
-# INTERFACE
-#
-
-sub worker_manager_start { warn 'started worker manager' }
-sub worker_manager_stop  { warn 'stopped worker manager' }
-sub max_workers_reached  { warn 'maximum worker count reached' }
-
-sub worker_stdout  { shift; warn join ' ', @_; }
-sub worker_stderr  { shift; warn join ' ', @_; }
-sub worker_error   { shift; warn join ' ', @_; }
-sub worker_done    { shift; warn join ' ', @_; }
-sub worker_started { shift; warn join ' ', @_; }
-sub sig_child      { shift; warn join ' ', @_; }
 
 no Moose::Role;
 1;
@@ -49,7 +36,7 @@ __END__
 
 =head1 NAME
 
-MooseX::Workers - [One line description of module's purpose here]
+MooseX::Workers - Provides a simple sub-process management for asynchronous tasks.
 
 
 =head1 VERSION
@@ -59,52 +46,111 @@ This document describes MooseX::Workers version 0.0.1
 
 =head1 SYNOPSIS
 
-    use MooseX::Workers;
+    package Manager;
+    use Moose;
+    with qw(MooseX::Workers);
 
-=for author to fill in:
-    Brief code example(s) here showing commonest usage(s).
-    This section will be as far as many users bother reading
-    so make it as educational and exeplary as possible.
-  
+    sub run { 
+        $_[0]->run_command(sub { sleep 500; print "Hello World\n"});
+        warn "Running now ... ";
+    }
+
+    # Implement our Interface
+    sub worker_manager_start { warn 'started worker manager' }
+    sub worker_manager_stop  { warn 'stopped worker manager' }
+    sub max_workers_reached  { warn 'maximum worker count reached' }
+    
+    sub worker_stdout  { shift; warn join ' ', @_; }
+    sub worker_stderr  { shift; warn join ' ', @_; }
+    sub worker_error   { shift; warn join ' ', @_; }
+    sub worker_done    { shift; warn join ' ', @_; }
+    sub worker_started { shift; warn join ' ', @_; }
+    sub sig_child      { shift; warn join ' ', @_; }
+    no Moose;    
+
+    Manager->new->run();
   
 =head1 DESCRIPTION
 
-=for author to fill in:
-    Write a full description of the module and its features here.
-    Use subsections (=head2, =head3) as appropriate.
+MooseX::Workers is a Role that provides easy delegation of long-running tasks 
+into a managed child process. Process managment is taken care of via POE and it's 
+POE::Wheel::Run module.
 
 
-=head1 INTERFACE 
+=head1 METHODS
 
-=for author to fill in:
-    Write a separate section listing the public components of the modules
-    interface. These normally consist of either subroutines that may be
-    exported, or methods that may be called on objects belonging to the
-    classes provided by the module.
+=over 
+
+=item run_command ($command)
+
+This is the whole point of this module. This will pass $command through to the 
+MooseX::Worker::Engine which will take care of running this asynchronously.
 
 
-=head1 DIAGNOSTICS
+=item check_worker_threashold
 
-=for author to fill in:
-    List every single error and warning message that the module can
-    generate (even the ones that will "never happen"), with a full
-    explanation of each problem, one or more likely causes, and any
-    suggested remedies.
+This will check to see how many workers you have compared to the max_workers limit. It returns true
+if the $num_workers is >= $max_workers;
 
-=over
+=item max_workers($count)
 
-=item C<< Error message here, perhaps with %s placeholders >>
+An accessor for the maxium number of workers. This is delegated to the MooseX::Workers::Engine object.
 
-[Description of error here]
+=item has_workers
 
-=item C<< Another error message here >>
+Check to see if we have *any* workers currently. This is delegated to the MooseX::Workers::Engine object.
 
-[Description of error here]
+=item num_workers
 
-[Et cetera, et cetera]
+Return the current number of workers. This is delegated to the MooseX::Workers::Engine object.
 
 =back
 
+=head1 INTERFACE 
+
+MooseX::Worker::Engine supports the following callbacks:
+
+=over
+
+=item worker_manager_start
+
+Called when the managing session is started
+
+=item worker_manager_stop
+
+Called when the managing session stops
+
+=item max_workers_reached
+
+Called when we reach the maximum number of workers
+
+=item worker_stdout
+
+Called when a child prints to STDOUT
+
+=item worker_stderr
+
+Called when a child prints to STDERR
+
+=item worker_error
+
+Called when there is an error condition detected with the child.
+
+=item worker_done
+
+Called when a worker completes $command
+
+=item worker_started
+
+Called when a worker starts $command
+
+=item sig_child
+
+Called when the mangaging session recieves a SIG CHDL event
+
+=back
+
+See MooseX::Workers::Engine for more details.
 
 =head1 CONFIGURATION AND ENVIRONMENT
 
@@ -126,7 +172,7 @@ MooseX::Workers requires no configuration files or environment variables.
     the module is part of the standard Perl distribution, part of the
     module's distribution, or must be installed separately. ]
 
-None.
+Moose, POE, POE::Wheel::Run
 
 
 =head1 INCOMPATIBILITIES
