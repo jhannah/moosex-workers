@@ -6,9 +6,9 @@ name 'MooseX-Workers';
 all_from 'lib/MooseX/Workers.pm';
 
 # Specific dependencies
-requires 'Moose'                    => 0;
-requires 'MooseX::AttributeHelpers' => 0;
-requires 'POE'                      => 0;
+requires 'Moose'                    => '0';
+requires 'MooseX::AttributeHelpers' => '0';
+requires 'POE'                      => '0';
 
 build_requires 'Test::More' => '0.42';
 
