@@ -99,7 +99,8 @@ sub _start {
 sub _stop {
     my ($self) = $_[OBJECT];
     $self->visitor->worker_manager_stop()
-      if $self->visitor->can('worker_manager_stop') $self->remove_manager;
+      if $self->visitor->can('worker_manager_stop');
+    $self->remove_manager;
 }
 
 sub _sig_child {
@@ -188,6 +189,8 @@ An ArrayRef of POE::Wheel::Run objects that are our workers.
 
 Contains the POE::Session that controls the workers.
 
+=back
+
 =head1 METHODS
 
 =over
@@ -206,7 +209,7 @@ Retrieve the worker at $key
 
 =item delete_worker($key)
 
-Remove the worker at $key
+Remove the worker atx $key
 
 =item has_workers
 
@@ -223,6 +226,10 @@ Check to see if we have a manager session.
 =item remove_manager
 
 Remove the manager session.
+
+=item meta
+
+The Metaclass for MooseX::Workers::Engine see Moose's documentation.
 
 =back
 

@@ -104,6 +104,10 @@ Check to see if we have *any* workers currently. This is delegated to the MooseX
 
 Return the current number of workers. This is delegated to the MooseX::Workers::Engine object.
 
+=item meta
+
+The Metaclass for MooseX::Workers::Engine see Moose's documentation.
+
 =back
 
 =head1 INTERFACE 
