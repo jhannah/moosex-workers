@@ -1,5 +1,7 @@
 Revision history for MooseX-Workers
-
-0.0.1  Mon Jul 16 20:38:32 2007
+0.02  Wed Sep 19 16:00:00 2007
+	- Fix a bug where worker_started wasn't being very optional (discovered by Kake)
+	- Fix some packaging issues and tests
+0.01  Mon Jul 16 20:38:32 2007
        Initial release.
 

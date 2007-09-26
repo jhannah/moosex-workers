@@ -85,7 +85,8 @@ sub add_worker {
         CloseEvent  => '_worker_done',
     );
     $self->set_worker( $wheel->ID => $wheel );
-    $self->visitor->worker_started( $wheel->ID => $command );
+    $self->visitor->worker_started( $wheel->ID => $command )
+      if $self->visitor->can('worker_started');
     return 1;
 }
 
