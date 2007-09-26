@@ -64,6 +64,11 @@ sub yield {
     $poe_kernel->post( $self->session => @_ );
 }
 
+sub call {
+    my $self = shift;
+    return $poe_kernel->call( $self->session => @_ );
+}
+
 #
 # EVENTS
 #
@@ -87,7 +92,7 @@ sub add_worker {
     $self->set_worker( $wheel->ID => $wheel );
     $self->visitor->worker_started( $wheel->ID => $command )
       if $self->visitor->can('worker_started');
-    return 1;
+    return ( $wheel->ID => $wheel->PID );
 }
 
 sub _start {
@@ -168,7 +173,8 @@ MooseX::Workers::Engine - Provide the workhorse to MooseX::Workers
   
 =head1 DESCRIPTION
 
-MooseX::Workers::Engine provides the main functionality to MooseX::Workers. It wraps a POE::Session and 
+MooseX::Workers::Engine provides the main functionality 
+to MooseX::Workers. It wraps a POE::Session and 
 
 =head1 ATTRIBUTES
 
@@ -199,6 +205,12 @@ Contains the POE::Session that controls the workers.
 =item yield
 
 Helper method to post events to our internal manager session.
+
+=item call
+
+Helper method to call events to our internal manager session. 
+This is synchronous and will block incoming data from the children 
+if it takes too long  to return.
 
 =item set_worker($key)
 

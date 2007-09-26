@@ -32,5 +32,5 @@ use lib qw(lib);
 }
 
 my $m = Manager->new();
-$m->run_command( sub { print "HELLO\n"; print STDERR "WORLD\n" } );
+$m->spawn( sub { print "HELLO\n"; print STDERR "WORLD\n" } );
 POE::Kernel->run();
