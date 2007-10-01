@@ -74,7 +74,7 @@ sub call {
 #
 
 sub add_worker {
-    my ( $self, $command ) = @_[ OBJECT, ARG0 ];
+    my ( $self, $command, $args ) = @_[ OBJECT, ARG0, ARG1 ];
 
     # if we've reached the worker threashold, set off a warning
     if ( $self->num_workers >= $self->max_workers ) {
@@ -82,8 +82,10 @@ sub add_worker {
         return;
     }
 
+    $args = [] unless ref $args eq 'ARRAY';
     my $wheel = POE::Wheel::Run->new(
         Program     => $command,
+        ProgramArgs => $args,
         StdoutEvent => '_worker_stdout',
         StderrEvent => '_worker_stderr',
         ErrorEvent  => '_worker_error',

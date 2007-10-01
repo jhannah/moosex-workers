@@ -21,8 +21,8 @@ has Engine => (
 );
 
 sub spawn {
-    my ( $self, $cmd ) = @_;
-    return $self->Engine->call( add_worker => $cmd );
+    my ( $self, $cmd, $args ) = @_;
+    return $self->Engine->call( add_worker => $cmd => $args );
 }
 __PACKAGE__->meta->alias_method( 'fork' => __PACKAGE__->can('spawn') );
 
