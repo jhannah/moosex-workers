@@ -48,6 +48,7 @@ has session => (
                       _worker_stderr
                       _worker_error
                       _worker_done
+                      _worker_started
                       _sig_child
                       add_worker
                       )
@@ -92,8 +93,7 @@ sub add_worker {
         CloseEvent  => '_worker_done',
     );
     $self->set_worker( $wheel->ID => $wheel );
-    $self->visitor->worker_started( $wheel->ID => $command )
-      if $self->visitor->can('worker_started');
+    $self->yield( '_worker_started' => $wheel->ID => $command );
     return ( $wheel->ID => $wheel->PID );
 }
 
@@ -144,6 +144,12 @@ sub _worker_done {
     $self->visitor->worker_done( $_[ARG0] )
       if $self->visitor->can('worker_done');
     $self->delete_worker( $_[ARG0] );
+}
+
+sub _worker_started {
+    my ($self, $wheelid, $command) = @_[OBJECT, ARG0, ARG1];
+    $self->visitor->worker_started( $wheelid, $command )
+      if $self->visitor->can('worker_started');
 }
 
 no Moose;
