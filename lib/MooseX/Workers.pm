@@ -220,6 +220,7 @@ L<http://rt.cpan.org>.
 
 Chris Prather  C<< <perigrin@cpan.org> >>
 
+Tom Lanyon C<< <dec@cpan.org> >>
 
 =head1 LICENCE AND COPYRIGHT
 
