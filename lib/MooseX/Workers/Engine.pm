@@ -75,15 +75,24 @@ sub call {
 #
 
 sub add_worker {
-    my ( $self, $command, $args ) = @_[ OBJECT, ARG0, ARG1 ];
+    my ( $self, $job, $args ) = @_[ OBJECT, ARG0, ARG1 ];
 
     # if we've reached the worker threashold, set off a warning
     if ( $self->num_workers >= $self->max_workers ) {
-        $self->visitor->max_workers_reached($command);
+        $self->visitor->max_workers_reached($job);
         return;
     }
 
-    $args = [] unless ref $args eq 'ARRAY';
+    my $command;
+    if ( blessed($job) && $job->isa('MooseX::Workers::Job') ) {
+        $command = $job->command;
+        $args ||= $job->args;
+    }
+    else {
+        $command = $job;
+    }
+
+    $args = [$args] unless ref $args eq 'ARRAY';
     my $wheel = POE::Wheel::Run->new(
         Program     => $command,
         ProgramArgs => $args,
@@ -93,14 +102,14 @@ sub add_worker {
         CloseEvent  => '_worker_done',
     );
     $self->set_worker( $wheel->ID => $wheel );
-    $self->yield( '_worker_started' => $wheel->ID => $command );
+    $self->yield( '_worker_started' => $wheel->ID => $job );
     return ( $wheel->ID => $wheel->PID );
 }
 
 sub _start {
     my ($self) = $_[OBJECT];
     $self->visitor->worker_manager_start()
-      if $self->visitor->can('worker_manager_stop');
+      if $self->visitor->can('worker_manager_start');
     $_[KERNEL]->sig( CHLD => '_sig_child' );
 }
 
@@ -147,7 +156,7 @@ sub _worker_done {
 }
 
 sub _worker_started {
-    my ($self, $wheelid, $command) = @_[OBJECT, ARG0, ARG1];
+    my ( $self, $wheelid, $command ) = @_[ OBJECT, ARG0, ARG1 ];
     $self->visitor->worker_started( $wheelid, $command )
       if $self->visitor->can('worker_started');
 }
