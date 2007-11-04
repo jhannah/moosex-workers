@@ -16,6 +16,9 @@ has Engine => (
           max_workers
           has_workers
           num_workers
+          put_worker
+          kill_worker
+          get_worker
           )
     ],
 );
@@ -24,7 +27,8 @@ sub spawn {
     my ( $self, $cmd, $args ) = @_;
     return $self->Engine->call( add_worker => $cmd => $args );
 }
-__PACKAGE__->meta->alias_method( 'fork' => __PACKAGE__->can('spawn') );
+
+meta->alias_method( 'fork' => __PACKAGE__->can('spawn') );
 
 sub run_command {
     my ( $self, $cmd ) = @_;

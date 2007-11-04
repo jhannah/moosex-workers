@@ -70,6 +70,16 @@ sub call {
     return $poe_kernel->call( $self->session => @_ );
 }
 
+sub put_worker {
+    my ( $self, $wheel_id ) = splice @_, 0, 2;
+    $self->get_worker($wheel_id)->put(@_);
+}
+
+sub kill_worker {
+    my ( $self, $wheel_id ) = splice @_, 0, 2;
+    $self->get_wheel($wheel_id)->kill(@_);
+}
+
 #
 # EVENTS
 #
@@ -122,26 +132,27 @@ sub _stop {
 
 sub _sig_child {
     my ($self) = $_[OBJECT];
-    $self->visitor->sig_child( @_[ ARG0 .. ARG2 ] )
-      if $self->visitor->can('sig_child');    # $PID, $ret
-                                              #$_[KERNEL]->signal_handled;
+    $self->visitor->sig_child( @_[ ARG0 .. ARG2 ] )    # $PID, $ret
+      if $self->visitor->can('sig_child');
+    $_[KERNEL]->sig_handled();
 }
 
 sub _worker_stdout {
     my ($self) = $_[OBJECT];
-    $self->visitor->worker_stdout( @_[ ARG0, ARG1 ] )
-      if $self->visitor->can('worker_stdout');    # $input, $wheel_id
+    $self->visitor->worker_stdout( @_[ ARG0, ARG1 ] )    # $input, $wheel_id
+      if $self->visitor->can('worker_stdout');
 }
 
 sub _worker_stderr {
     my ($self) = $_[OBJECT];
     $_[ARG1] =~ tr[ -~][]cd;
-    $self->visitor->worker_stderr( @_[ ARG0, ARG1 ] )
-      if $self->visitor->can('worker_stderr');    # $input, $wheel_id
+    $self->visitor->worker_stderr( @_[ ARG0, ARG1 ] )    # $input, $wheel_id
+      if $self->visitor->can('worker_stderr');
 }
 
 sub _worker_error {
     my ($self) = $_[OBJECT];
+    return if $_[ARG0] eq "read" && $_[ARG1] == 0;
 
     # $operation, $errnum, $errstr, $wheel_id
     $self->visitor->worker_error( @_[ ARG0 .. ARG3 ] )
@@ -184,6 +195,8 @@ MooseX::Workers::Engine - Provide the workhorse to MooseX::Workers
               max_workers
               has_workers
               num_workers
+              put_worker
+              kill_worker
               )
         ],
     );

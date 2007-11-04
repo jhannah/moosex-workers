@@ -1,9 +1,13 @@
 Revision history for MooseX-Workers
+0.04  ???
+		- Added put_worker to send input to a worker
+		- Added kill_worker to terminate a wheel
+		- Exposed more of the engine details
 0.03  Mon Oct 1 2007
-        - Moved worker_started into an event so add_worker returns
-          before it's called (dec)
-        - Can now pass arguments to spawn() which are passed as
-          ProgramArgs to the underlying POE::Wheel (dec)
+		- Moved worker_started into an event so add_worker returns
+		  before it's called (dec)
+		- Can now pass arguments to spawn() which are passed as
+		  ProgramArgs to the underlying POE::Wheel (dec)
 		- Fixed a bug where worker_start was actually calling worker_stop 
 		  in the visitor (thanks to ash and perlmonkey2 for noticing)
 		- new spawn() interface that returns the Wheel ID and PID
@@ -11,5 +15,5 @@ Revision history for MooseX-Workers
 	- Fix a bug where worker_started wasn't being very optional (discovered by Kake)
 	- Fix some packaging issues and tests
 0.01  Mon Jul 16 20:38:32 2007
-       Initial release.
+	   Initial release.
 

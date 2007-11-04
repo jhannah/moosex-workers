@@ -24,7 +24,7 @@ use lib qw(lib);
         my ( $self, $output ) = @_;
         ::is( $output, 'WORLD' );
     }
-    sub worker_error {  }
+    sub worker_error { ::fail('Got error?'.@_) }
     sub worker_done  { ::pass('worker done') }
 
     sub worker_started { ::pass('worker started') }
