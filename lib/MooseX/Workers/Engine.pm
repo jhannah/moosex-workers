@@ -125,7 +125,7 @@ sub add_worker {
         CloseEvent  => '_worker_done',
     );
     $self->set_worker( $wheel->ID => $wheel );
-    $self->set_process( $wheel->PID => $wheel );
+    $self->set_process( $wheel->PID => $wheel->ID );
     $self->yield( '_worker_started' => $wheel->ID => $job );
     return ( $wheel->ID => $wheel->PID );
 }
@@ -146,9 +146,9 @@ sub _stop {
 
 sub _sig_child {
     my ($self) = $_[OBJECT];
-    my $wheelID = $self->get_process( $_[ARG1] );
-    $self->visitor->sig_child( $wheelID, $_[ARG2] )    # $PID, $ret
+    $self->visitor->sig_child( $self->get_process($_[ARG1]), $_[ARG2] )
       if $self->visitor->can('sig_child');
+    $self->remove_process( $_[ARG1] );
     $_[KERNEL]->sig_handled();
 }
 
@@ -184,7 +184,6 @@ sub _worker_done {
 sub delete_worker {
     my ( $self, $wheelID ) = @_;
     my $wheel = $self->get_worker($wheelID);
-    $self->remove_process( $wheel->PID );
     $self->remove_worker( $wheel->ID );
 }
 
