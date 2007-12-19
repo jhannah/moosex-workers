@@ -16,6 +16,19 @@ has max_workers => (
     default => sub { 5 },
 );
 
+has process_list => (
+    metaclass  => 'Collection::Hash',
+    isa        => 'HashRef',
+    is         => 'ro',
+    auto_deref => 1,
+    default    => sub { {} },
+    provides   => {
+        set    => 'set_process',
+        get    => 'get_process',
+        delete => 'remove_process',
+    }
+);
+
 has workers => (
     isa       => 'HashRef',
     is        => 'rw',
@@ -26,7 +39,7 @@ has workers => (
     provides  => {
         'set'    => 'set_worker',
         'get'    => 'get_worker',
-        'delete' => 'delete_worker',
+        'delete' => 'remove_worker',
         'empty'  => 'has_workers',
         'count'  => 'num_workers',
     },
@@ -112,6 +125,7 @@ sub add_worker {
         CloseEvent  => '_worker_done',
     );
     $self->set_worker( $wheel->ID => $wheel );
+    $self->set_process( $wheel->PID => $wheel );
     $self->yield( '_worker_started' => $wheel->ID => $job );
     return ( $wheel->ID => $wheel->PID );
 }
@@ -132,7 +146,8 @@ sub _stop {
 
 sub _sig_child {
     my ($self) = $_[OBJECT];
-    $self->visitor->sig_child( @_[ ARG0 .. ARG2 ] )    # $PID, $ret
+    my $wheelID = $self->get_process( $_[ARG1] );
+    $self->visitor->sig_child( $wheelID, $_[ARG2] )    # $PID, $ret
       if $self->visitor->can('sig_child');
     $_[KERNEL]->sig_handled();
 }
@@ -164,6 +179,13 @@ sub _worker_done {
     $self->visitor->worker_done( $_[ARG0] )
       if $self->visitor->can('worker_done');
     $self->delete_worker( $_[ARG0] );
+}
+
+sub delete_worker {
+    my ( $self, $wheelID ) = @_;
+    my $wheel = $self->get_worker($wheelID);
+    $self->remove_process( $wheel->PID );
+    $self->remove_worker( $wheel->ID );
 }
 
 sub _worker_started {
