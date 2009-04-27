@@ -8,8 +8,8 @@ auto_set_repository;
 
 # Specific dependencies
 requires 'Moose'                    => '0.75';
-requires 'MooseX::AttributeHelpers' => '0.17';
-requires 'POE'                      => '1.05';
+requires 'MooseX::AttributeHelpers' => '0.14';
+requires 'POE'                      => '1.04';
 
 build_requires 'Test::More' => '0.42';
 
