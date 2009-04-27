@@ -1,5 +1,4 @@
 package MooseX::Workers::Engine;
-use strict;
 use Moose;
 use POE qw(Wheel::Run);
 use MooseX::AttributeHelpers;

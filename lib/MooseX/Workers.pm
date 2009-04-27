@@ -1,8 +1,7 @@
 package MooseX::Workers;
-use strict;
-our $VERSION = 0.04;
-
 use Moose::Role;
+our $VERSION = '0.05';
+
 use MooseX::Workers::Engine;
 
 has Engine => (
@@ -35,8 +34,14 @@ sub run_command {
     $self->Engine->yield( add_worker => $cmd );
 }
 
-sub check_worker_threashold {
+sub check_worker_threshold {
     return $_[0]->num_workers >= $_[0]->max_workers;
+}
+
+sub check_worker_threashold {
+    warn 'check_worker_threashold is deprecated '
+      . 'please use check_worker_threshold instead';
+    shift->check_worker_threshold;
 }
 
 no Moose::Role;
@@ -99,7 +104,7 @@ This is the whole point of this module. This will pass $command through to the
 MooseX::Worker::Engine which will take care of running this asynchronously.
 
 
-=item check_worker_threashold
+=item check_worker_threshold
 
 This will check to see how many workers you have compared to the max_workers limit. It returns true
 if the $num_workers is >= $max_workers;
