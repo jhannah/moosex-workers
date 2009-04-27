@@ -28,7 +28,7 @@ sub spawn {
     return $self->Engine->call( add_worker => $cmd => $args );
 }
 
-__PACKAGE__->meta->alias_method( 'fork' => __PACKAGE__->can('spawn') );
+__PACKAGE__->meta->add_method( 'fork' => __PACKAGE__->can('spawn') );
 
 sub run_command {
     my ( $self, $cmd ) = @_;
