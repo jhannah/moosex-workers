@@ -1,4 +1,4 @@
-use Test::More tests => 6;
+use Test::More tests => 8;
 use lib qw(lib);
 
 {
@@ -30,7 +30,9 @@ use lib qw(lib);
 
     sub worker_done  { 
         my ( $self, $job ) = @_;
-        ::is( $job->name, 'Foo', '$job->name' );
+        ::is( $job->name, 'Foo',     '$job->name ' . $job->name );
+        ::is( $job->ID,   1,         '$job->ID '   . $job->ID   );
+        ::cmp_ok( $job->PID, '>', 0, '$job->PID '  . $job->PID  );
     }
 
     sub worker_started { ::pass('worker started') }

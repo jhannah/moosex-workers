@@ -160,11 +160,12 @@ sub add_worker {
     );
     $self->set_worker( $wheel->ID => $wheel );
     $self->set_process( $wheel->PID => $wheel->ID );
-    $self->yield( '_worker_started' => $wheel->ID => $job );
     if ( blessed($job) && $job->isa('MooseX::Workers::Job') ) {
-       $job->ID($wheel->PID);
+       $job->ID($wheel->ID);
+       $job->PID($wheel->PID);
        $self->set_job( $wheel->ID => $job );
     } 
+    $self->yield( '_worker_started' => $wheel->ID => $job );
     return ( $wheel->ID => $wheel->PID );
 }
 
@@ -242,9 +243,16 @@ sub delete_worker {
 }
 
 sub _worker_started {
-    my ( $self, $wheelid, $command ) = @_[ OBJECT, ARG0, ARG1 ];
-    $self->visitor->worker_started( $wheelid, $command )
-      if $self->visitor->can('worker_started');
+    my ( $self, $wheel_id, $command ) = @_[ OBJECT, ARG0, ARG1 ];
+    $DB::single = 1;
+    my $job = $self->get_job($wheel_id);
+    if ($self->visitor->can('worker_started')) {
+        if ($job) {
+            $self->visitor->worker_started( $job )
+        } else {
+            $self->visitor->worker_started( $wheel_id, $command )
+        }
+    }
 }
 
 no Moose;
@@ -412,9 +420,11 @@ Called when the mangaging session recieves a SIG CHDL event
 
 =back
 
-=head1 AUTHOR
+=head1 AUTHORS
 
 Chris Prather  C<< <perigrin@cpan.org> >>
+
+Jay Hannah  C<< <jay@jays.net> >>
 
 
 =head1 LICENCE AND COPYRIGHT
