@@ -15,6 +15,7 @@ has max_workers => (
     default => sub { 5 },
 );
 
+# Processes currently running
 has process_list => (
     metaclass  => 'Collection::Hash',
     isa        => 'HashRef',
@@ -25,6 +26,19 @@ has process_list => (
         set    => 'set_process',
         get    => 'get_process',
         delete => 'remove_process',
+    }
+);
+
+# Processes waiting to run
+has process_queue => (
+    metaclass  => 'Collection::Array',
+    isa        => 'ArrayRef',
+    is         => 'rw',
+    auto_deref => 1,
+    default    => sub { [] },
+    provides   => {
+        'push' => 'enqueue_process',
+        'pop'  => 'dequeue_process',
     }
 );
 
@@ -101,8 +115,13 @@ sub add_worker {
 
     # if we've reached the worker threashold, set off a warning
     if ( $self->num_workers >= $self->max_workers ) {
-        $self->visitor->max_workers_reached($job);
-        return;
+        if ( $args->{enqueue} ) {
+            $self->enqueue_process([$job, $args]);
+            return;
+        } else {
+            $self->visitor->max_workers_reached($job);
+            return;
+        }
     }
 
     my $command;
@@ -175,9 +194,20 @@ sub _worker_error {
 
 sub _worker_done {
     my ($self) = $_[OBJECT];
+    $DB::single = 1;
     $self->visitor->worker_done( $_[ARG0] )
       if $self->visitor->can('worker_done');
     $self->delete_worker( $_[ARG0] );
+
+    # If we have free workers and processes in queue, then dequeue one of them.
+    while ( $self->num_workers < $self->max_workers && 
+            (my $jobref = $self->dequeue_process)
+    ) {
+        my ($cmd, $args) = @$jobref;
+        # This has to be call(), not yield() so num_workers increments before
+        # next loop above.
+        $self->call(add_worker => $cmd, $args);
+    }
 }
 
 sub delete_worker {
@@ -224,7 +254,8 @@ MooseX::Workers::Engine - Provide the workhorse to MooseX::Workers
 =head1 DESCRIPTION
 
 MooseX::Workers::Engine provides the main functionality 
-to MooseX::Workers. It wraps a POE::Session and 
+to MooseX::Workers. It wraps a POE::Session and as many POE::Wheel::Run
+objects as it needs.
 
 =head1 ATTRIBUTES
 
@@ -260,7 +291,7 @@ Helper method to post events to our internal manager session.
 
 Helper method to call events to our internal manager session. 
 This is synchronous and will block incoming data from the children 
-if it takes too long  to return.
+if it takes too long to return.
 
 =item set_worker($key)
 

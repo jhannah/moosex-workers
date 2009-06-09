@@ -34,6 +34,11 @@ sub run_command {
     $self->Engine->yield( add_worker => $cmd );
 }
 
+sub enqueue {
+    my ( $self, $cmd ) = @_;
+    $self->Engine->yield( add_worker => $cmd, { enqueue => 1 } );
+}
+
 sub check_worker_threshold {
     return $_[0]->num_workers >= $_[0]->max_workers;
 }
@@ -55,7 +60,6 @@ MooseX::Workers - Provides a simple sub-process management for asynchronous task
 =head1 VERSION
 
 This document describes MooseX::Workers version 0.0.1
-
 
 =head1 SYNOPSIS
 
@@ -107,6 +111,15 @@ care of running $command for you.
 spawn() and fork() both envoke L<POE::Kernel> call(), which is synchronous.
 
 run_command() envokes L<POE::Kernel> yield(), which is asynchronous.
+
+If max_workers() has been reached, run_command() warns and does nothing. It is up to you to re-submit
+$command. See enqueue() if you want us to run $command as soon as another worker is free.
+
+=item enqueue($command)
+
+Just like run_command(), only that if max_workers() setting has been reached, then we add $command to a FIFO
+process list to be run as soon as possible. As soon as a process exits, the first process in queue (if
+any) will be run.
 
 =item check_worker_threshold
 
