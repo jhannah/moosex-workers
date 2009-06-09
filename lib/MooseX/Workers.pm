@@ -52,7 +52,6 @@ __END__
 
 MooseX::Workers - Provides a simple sub-process management for asynchronous tasks.
 
-
 =head1 VERSION
 
 This document describes MooseX::Workers version 0.0.1
@@ -84,25 +83,30 @@ This document describes MooseX::Workers version 0.0.1
     no Moose;
 
     Manager->new->run();
-  
+
 =head1 DESCRIPTION
 
 MooseX::Workers is a Role that provides easy delegation of long-running tasks 
 into a managed child process. Process managment is taken care of via POE and it's 
 POE::Wheel::Run module.
 
-
 =head1 METHODS
 
 =over 
 
 =item spawn ($command)
+
 =item fork ($command)
+
 =item run_command ($command)
 
-This is the whole point of this module. This will pass $command through to the 
-MooseX::Worker::Engine which will take care of running this asynchronously.
+These three methods are the whole point of this module. 
+They pass $command through to the MooseX::Worker::Engine which will take 
+care of running $command for you.
 
+spawn() and fork() both envoke L<POE::Kernel> call(), which is synchronous.
+
+run_command() envokes L<POE::Kernel> yield(), which is asynchronous.
 
 =item check_worker_threshold
 
@@ -181,9 +185,8 @@ See MooseX::Workers::Engine for more details.
     files, and the meaning of any environment variables or properties
     that can be set. These descriptions must also include details of any
     configuration language used.
-  
-MooseX::Workers requires no configuration files or environment variables.
 
+MooseX::Workers requires no configuration files or environment variables.
 
 =head1 DEPENDENCIES
 
@@ -195,7 +198,6 @@ MooseX::Workers requires no configuration files or environment variables.
 
 Moose, POE, POE::Wheel::Run
 
-
 =head1 INCOMPATIBILITIES
 
 =for author to fill in:
@@ -206,7 +208,6 @@ Moose, POE, POE::Wheel::Run
     filters are mutually incompatible).
 
 None reported.
-
 
 =head1 BUGS AND LIMITATIONS
 
@@ -232,9 +233,11 @@ Chris Prather  C<< <perigrin@cpan.org> >>
 
 Tom Lanyon C<< <dec@cpan.org> >>
 
+Jay Hannah C<< <jay@jays.net> >>
+
 =head1 LICENCE AND COPYRIGHT
 
-Copyright (c) 2007, Chris Prather C<< <perigrin@cpan.org> >>. Some rights reserved.
+Copyright (c) 2007-2009, Chris Prather C<< <perigrin@cpan.org> >>. Some rights reserved.
 
 This module is free software; you can redistribute it and/or
 modify it under the same terms as Perl itself. See L<perlartistic>.
