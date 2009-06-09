@@ -36,7 +36,7 @@ sub run_command {
 
 sub enqueue {
     my ( $self, $cmd ) = @_;
-    $self->Engine->yield( add_worker => $cmd, { enqueue => 1 } );
+    $self->Engine->call( add_worker => $cmd, { enqueue => 1 } );
 }
 
 sub check_worker_threshold {

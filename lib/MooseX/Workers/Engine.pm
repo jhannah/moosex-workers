@@ -58,6 +58,22 @@ has workers => (
     },
 );
 
+has jobs => (
+    isa       => 'HashRef',
+    is        => 'rw',
+    lazy      => 1,
+    required  => 1,
+    default   => sub { {} },
+    metaclass => 'Collection::Hash',
+    provides  => {
+        'set'    => 'set_job',
+        'get'    => 'get_job',
+        'delete' => 'remove_job',
+        'empty'  => 'has_jobs',
+        'count'  => 'num_jobs',
+    },
+);
+
 has session => (
     isa      => 'POE::Session',
     is       => 'ro',
@@ -145,6 +161,10 @@ sub add_worker {
     $self->set_worker( $wheel->ID => $wheel );
     $self->set_process( $wheel->PID => $wheel->ID );
     $self->yield( '_worker_started' => $wheel->ID => $job );
+    if ( blessed($job) && $job->isa('MooseX::Workers::Job') ) {
+       $job->ID($wheel->PID);
+       $self->set_job( $wheel->ID => $job );
+    } 
     return ( $wheel->ID => $wheel->PID );
 }
 
@@ -193,11 +213,16 @@ sub _worker_error {
 }
 
 sub _worker_done {
-    my ($self) = $_[OBJECT];
-    $DB::single = 1;
-    $self->visitor->worker_done( $_[ARG0] )
-      if $self->visitor->can('worker_done');
-    $self->delete_worker( $_[ARG0] );
+    my ($self, $wheel_id) = @_[ OBJECT, ARG0 ];
+    my $job = $self->get_job($wheel_id);
+    if ($self->visitor->can('worker_done')) {
+        if ($job) {
+            $self->visitor->worker_done( $job );
+        } else {
+            $self->visitor->worker_done( $wheel_id );
+        }
+    }
+    $self->delete_worker( $wheel_id );
 
     # If we have free workers and processes in queue, then dequeue one of them.
     while ( $self->num_workers < $self->max_workers && 
