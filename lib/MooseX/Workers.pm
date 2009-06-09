@@ -1,6 +1,6 @@
 package MooseX::Workers;
 use Moose::Role;
-our $VERSION = '0.05';
+our $VERSION = '0.06';
 
 use MooseX::Workers::Engine;
 
@@ -56,10 +56,6 @@ __END__
 =head1 NAME
 
 MooseX::Workers - Provides a simple sub-process management for asynchronous tasks.
-
-=head1 VERSION
-
-This document describes MooseX::Workers version 0.0.1
 
 =head1 SYNOPSIS
 
@@ -117,9 +113,9 @@ $command. See enqueue() if you want us to run $command as soon as another worker
 
 =item enqueue($command)
 
-Just like run_command(), only that if max_workers() setting has been reached, then we add $command to a FIFO
-process list to be run as soon as possible. As soon as a process exits, the first process in queue (if
-any) will be run.
+Just like run_command(), only that if max_workers() has been set and that number of workers
+has been reached, then we add $command to a FIFO command queue. As soon as any running 
+worker exits, the first $command in queue (if any) will be run.
 
 =item check_worker_threshold
 
@@ -240,13 +236,14 @@ C<bug-moosex-workers@rt.cpan.org>, or through the web interface at
 L<http://rt.cpan.org>.
 
 
-=head1 AUTHOR
+=head1 AUTHORS
 
-Chris Prather  C<< <perigrin@cpan.org> >>
+Chris Prather C<< <perigrin@cpan.org> >>
 
 Tom Lanyon C<< <dec@cpan.org> >>
 
 Jay Hannah C<< <jay@jays.net> >>
+
 
 =head1 LICENCE AND COPYRIGHT
 

@@ -231,9 +231,9 @@ __END__
 MooseX::Workers::Engine - Provide the workhorse to MooseX::Workers
 
 =head1 SYNOPSIS
-    
+
     package MooseX::Workers;
-    
+
     has Engine => (
         isa      => 'MooseX::Workers::Engine',
         is       => 'ro',
@@ -250,7 +250,7 @@ MooseX::Workers::Engine - Provide the workhorse to MooseX::Workers
               )
         ],
     );
-  
+
 =head1 DESCRIPTION
 
 MooseX::Workers::Engine provides the main functionality 
@@ -394,7 +394,7 @@ Chris Prather  C<< <perigrin@cpan.org> >>
 
 =head1 LICENCE AND COPYRIGHT
 
-Copyright (c) 2007, Chris Prather C<< <perigrin@cpan.org> >>. All rights reserved.
+Copyright (c) 2007-2009, Chris Prather C<< <perigrin@cpan.org> >>. All rights reserved.
 
 This module is free software; you can redistribute it and/or
 modify it under the same terms as Perl itself. See L<perlartistic>.

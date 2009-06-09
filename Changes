@@ -1,4 +1,8 @@
 Revision history for MooseX-Workers
+
+0.06  2009-06-09 jhannah
+	- Added enqueue()
+	- POD cleanups
 0.05  2009-04-27
 	- Fixed deprecation warnings with modern Moose. 
 	- Updated dependency version numbers
