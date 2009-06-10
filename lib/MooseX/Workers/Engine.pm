@@ -37,8 +37,8 @@ has process_queue => (
     auto_deref => 1,
     default    => sub { [] },
     provides   => {
-        'push' => 'enqueue_process',
-        'pop'  => 'dequeue_process',
+        'push'  => 'enqueue_process',
+        'shift' => 'dequeue_process',
     }
 );
 
@@ -205,15 +205,17 @@ sub _sig_child {
 }
 
 sub _worker_stdout {
-    my ($self) = $_[OBJECT];
-    $self->visitor->worker_stdout( @_[ ARG0, ARG1 ] )    # $input, $wheel_id
+    my ($self, $input, $wheel_id) = @_[ OBJECT, ARG0, ARG1 ];
+    my $job = $self->get_job($wheel_id);
+    $self->visitor->worker_stdout( $input, $job || $wheel_id )
       if $self->visitor->can('worker_stdout');
 }
 
 sub _worker_stderr {
-    my ($self) = $_[OBJECT];
-    $_[ARG1] =~ tr[ -~][]cd;
-    $self->visitor->worker_stderr( @_[ ARG0, ARG1 ] )    # $input, $wheel_id
+    my ($self, $input, $wheel_id) = @_[ OBJECT, ARG0, ARG1 ];
+    $wheel_id =~ tr[ -~][]cd;
+    my $job = $self->get_job($wheel_id);
+    $self->visitor->worker_stderr( $input, $job || $wheel_id )
       if $self->visitor->can('worker_stderr');
 }
 
