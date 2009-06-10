@@ -93,6 +93,7 @@ has session => (
                       _worker_started
                       _sig_child
                       add_worker
+                      _kill_worker
                       )
                 ],
             ],
@@ -127,7 +128,7 @@ sub kill_worker {
 #
 
 sub add_worker {
-    my ( $self, $job, $args ) = @_[ OBJECT, ARG0, ARG1 ];
+    my ( $self, $job, $args, $kernel ) = @_[ OBJECT, ARG0, ARG1, KERNEL ];
 
     # if we've reached the worker threashold, set off a warning
     if ( $self->num_workers >= $self->max_workers ) {
@@ -164,9 +165,20 @@ sub add_worker {
        $job->ID($wheel->ID);
        $job->PID($wheel->PID);
        $self->set_job( $wheel->ID => $job );
+       if ($job->timeout) {
+          $kernel->delay('_kill_worker', $job->timeout, $wheel);
+       }
     } 
     $self->yield( '_worker_started' => $wheel->ID => $job );
     return ( $wheel->ID => $wheel->PID );
+}
+
+sub _kill_worker {
+    my ( $self, $wheel ) = @_[ OBJECT, ARG0 ];
+    my $job = $self->get_job($wheel->ID);
+    $self->visitor->worker_timeout( $job )
+      if $self->visitor->can('worker_timeout');
+    $wheel->kill;
 }
 
 sub _start {
