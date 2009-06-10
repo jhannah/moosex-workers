@@ -1,5 +1,6 @@
 package MooseX::Workers;
 use Moose::Role;
+use MooseX::Workers::Job;
 our $VERSION = '0.06_99';        # _99 apparently tells PAUSE/CPAN development release
 
 use MooseX::Workers::Engine;

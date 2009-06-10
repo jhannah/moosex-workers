@@ -2,6 +2,9 @@ use Test::More tests => 7;
 use lib qw(lib);
 use strict;
 
+# This timeout demonstration covers the case where the timeout is envoked before the
+# child exits on it's own. 
+
 my $starttime = time;
 # print "starttime is $starttime\n";
 
@@ -49,8 +52,8 @@ my $starttime = time;
     
     sub run { 
         my $job = MooseX::Workers::Job->new(
-           timeout => 1,
-           command => sub { print "HELLO\n"; print STDERR "WORLD\n"; sleep 3; },
+            timeout => 1,
+            command => sub { print "HELLO\n"; print STDERR "WORLD\n"; sleep 3; },
         );
         $_[0]->run_command( $job );
         POE::Kernel->run();

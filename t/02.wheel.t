@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 $|++;
-use Test::More no_plan => 1;
+use Test::More no_plan;
 use warnings;
 use strict;
 

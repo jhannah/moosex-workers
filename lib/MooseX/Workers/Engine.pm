@@ -128,7 +128,7 @@ sub kill_worker {
 #
 
 sub add_worker {
-    my ( $self, $job, $args, $kernel ) = @_[ OBJECT, ARG0, ARG1, KERNEL ];
+    my ( $self, $job, $args, $kernel, $heap ) = @_[ OBJECT, ARG0, ARG1, KERNEL, HEAP ];
 
     # if we've reached the worker threashold, set off a warning
     if ( $self->num_workers >= $self->max_workers ) {
@@ -166,7 +166,8 @@ sub add_worker {
        $job->PID($wheel->PID);
        $self->set_job( $wheel->ID => $job );
        if ($job->timeout) {
-          $kernel->delay('_kill_worker', $job->timeout, $wheel);
+          $$heap{wheel_to_timer}{$wheel->ID} =
+             $kernel->delay_set('_kill_worker', $job->timeout, $wheel->ID);
        }
     } 
     $self->yield( '_worker_started' => $wheel->ID => $job );
@@ -174,11 +175,11 @@ sub add_worker {
 }
 
 sub _kill_worker {
-    my ( $self, $wheel ) = @_[ OBJECT, ARG0 ];
-    my $job = $self->get_job($wheel->ID);
+    my ( $self, $wheel_id ) = @_[ OBJECT, ARG0 ];
+    my $job = $self->get_job($wheel_id);
     $self->visitor->worker_timeout( $job )
       if $self->visitor->can('worker_timeout');
-    $wheel->kill;
+    $self->get_worker($wheel_id)->kill;
 }
 
 sub _start {
@@ -226,8 +227,9 @@ sub _worker_error {
 }
 
 sub _worker_done {
-    my ($self, $wheel_id) = @_[ OBJECT, ARG0 ];
+    my ($self, $wheel_id, $kernel, $heap) = @_[ OBJECT, ARG0, KERNEL, HEAP ];
     my $job = $self->get_job($wheel_id);
+    $kernel->alarm_remove(delete $$heap{wheel_to_timer}{$wheel_id});
     if ($self->visitor->can('worker_done')) {
         if ($job) {
             $self->visitor->worker_done( $job );
@@ -256,7 +258,6 @@ sub delete_worker {
 
 sub _worker_started {
     my ( $self, $wheel_id, $command ) = @_[ OBJECT, ARG0, ARG1 ];
-    $DB::single = 1;
     my $job = $self->get_job($wheel_id);
     if ($self->visitor->can('worker_started')) {
         if ($job) {
