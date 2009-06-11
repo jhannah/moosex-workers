@@ -185,7 +185,10 @@ Called when the mangaging session recieves a SIG CHDL event
 
 =back
 
-See MooseX::Workers::Engine for more details.
+See L<MooseX::Workers::Engine> for more details. 
+Also see L<MooseX::Workers::Job> if you'd like to give your tasks
+names, or set timeouts on them.
+
 
 =head1 CONFIGURATION AND ENVIRONMENT
 
