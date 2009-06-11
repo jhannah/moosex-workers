@@ -4,7 +4,6 @@ use lib qw(lib);
 {
 
     package Manager;
-    use MooseX::Workers::Job;
     use Moose;
     with qw(MooseX::Workers);
 
