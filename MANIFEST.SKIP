@@ -1,0 +1,1 @@
+^(?!script/|examples/|lib/|inc/|t/|git/|Makefile.PL$|README$|MANIFEST$|Changes$|META.yml$)
