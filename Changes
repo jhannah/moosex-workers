@@ -1,7 +1,7 @@
 Revision history for MooseX-Workers
 
-0.07 
-	- Releasing 0.06 on an unsuspecting world.
+0.07  2009-06-16 jhannah
+	- No one screamed at the dev release, so pushing as a normal release.
 0.06_99  2009-06-10 jhannah
 	- Added enqueue()
 	- Added MooseX::Workers::Job
