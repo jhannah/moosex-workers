@@ -4,8 +4,8 @@ use Moose;
 has 'ID'      => ( is => 'rw', isa => 'Int' );   # POE::Wheel::Run->ID
 has 'PID'     => ( is => 'rw', isa => 'Int' );   # POE::Wheel::Run->PID
 has 'name'    => ( is => 'rw', isa => 'Str' );
-has 'command' => ( is => 'rw', isa => 'CodeRef' );
-has 'args'    => ( is => 'rw', isa => 'HashRef' );
+has 'command' => ( is => 'rw', isa => 'CodeRef|Str|ArrayRef' );  # See POE::Wheel::Run POD (Program)
+has 'args'    => ( is => 'rw', isa => 'ArrayRef' );              # See POE::Wheel::Run POD (ProgramArgs)
 has 'timeout' => ( is => 'rw', isa => 'Int' );   # abort after this many seconds
 no Moose;
 

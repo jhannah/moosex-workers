@@ -144,7 +144,7 @@ sub add_worker {
     my $command;
     if ( blessed($job) && $job->isa('MooseX::Workers::Job') ) {
         $command = $job->command;
-        $args ||= $job->args;
+        $args = $job->args;
     }
     else {
         $command = $job;
