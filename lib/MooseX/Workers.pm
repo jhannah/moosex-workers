@@ -56,7 +56,7 @@ __END__
 
 =head1 NAME
 
-MooseX::Workers - Provides a simple sub-process management for asynchronous tasks.
+MooseX::Workers - Simple sub-process management for asynchronous tasks
 
 =head1 SYNOPSIS
 
