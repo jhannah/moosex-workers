@@ -1,8 +1,9 @@
-use Test::More tests => 14;
+use Test::More tests => 13;
 use lib qw(lib);
 use strict;
 
 my $starttime = time;
+my $elapsed = {};
 # print "starttime is $starttime\n";
 
 {
@@ -16,6 +17,8 @@ my $starttime = time;
 
     sub worker_manager_stop {
         ::pass('stopped worker manager');
+        ::cmp_ok($elapsed->{3}, '>', $elapsed->{1}, "worker 3 took at least 1s longer than worker 1");
+        ::cmp_ok($elapsed->{3}, '>', $elapsed->{2}, "worker 3 took at least 1s longer than worker 2");
     }
 
     sub worker_stdout {
@@ -33,12 +36,7 @@ my $starttime = time;
     sub worker_done  { 
         my ( $self, $wheel ) = @_;
         my $now = time;
-        if ($wheel < 3) {
-           ::ok($now == $starttime + 2 || $now == $starttime + 3, 
-                                                "worker $wheel done in 2-3 seconds");
-        } else {
-           ::cmp_ok($now, '>=', $starttime + 4, "worker $wheel done in >= 4 seconds");
-        }
+        $elapsed->{$wheel} = $now - $starttime;
     }
 
     sub worker_started { 
@@ -51,7 +49,7 @@ my $starttime = time;
             $_[0]->enqueue( sub { 
                 print "HELLO $num\n"; 
                 print STDERR "WORLD $num\n"; 
-                sleep 2;
+                sleep 1;
             } );
         }
         POE::Kernel->run();

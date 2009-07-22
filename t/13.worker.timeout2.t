@@ -44,7 +44,7 @@ my $starttime = time;
     sub worker_done  { 
         my ( $self, $job ) = @_;
         my $now = time;
-        ::cmp_ok($now, '<=', $starttime + 1, "worker done in <= 1 second");
+        ::cmp_ok($now, '<', $starttime + 10, "worker done in < 10 seconds");
     }
 
     sub worker_started { 

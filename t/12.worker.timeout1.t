@@ -42,7 +42,7 @@ my $starttime = time;
     sub worker_done  { 
         my ( $self, $job ) = @_;
         my $now = time;
-        ::cmp_ok($now, '<=', $starttime + 2, "worker done in <= 2 seconds");
+        ::cmp_ok($now, '<', $starttime + 10, "worker done in < 10 seconds");
     }
 
     sub worker_started { 
@@ -53,7 +53,7 @@ my $starttime = time;
     sub run { 
         my $job = MooseX::Workers::Job->new(
             timeout => 1,
-            command => sub { print "HELLO\n"; print STDERR "WORLD\n"; sleep 3; },
+            command => sub { print "HELLO\n"; print STDERR "WORLD\n"; sleep 10; },
         );
         $_[0]->run_command( $job );
         POE::Kernel->run();

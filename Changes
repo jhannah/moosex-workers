@@ -1,23 +1,35 @@
 Revision history for MooseX-Workers
 
+0.09  2009-07-22 jhannah
+	- confound and Sartak tell me that 'weaken' is wrong. Changed to 'weak_ref'.
+        - Some CPAN testers are running these tests on very-overloaded machines, so
+          some of my "1 seconds or less" assumptions were bad for some clients.
+          Tests changed so that now slow / overloaded machines have 10 seconds to
+          do simple things.
+
 0.08  2009-07-14 jhannah
 	- MooseX::Workers::Job 'args' attribute can now actually be used.
+
 0.07  2009-06-16 jhannah
 	- No one screamed at the dev release, so pushing as a normal release.
+
 0.06_99  2009-06-10 jhannah
 	- Added enqueue()
 	- Added MooseX::Workers::Job
 	- Added timeout attribute, worker_timeout callback
 	- POD cleanup
+
 0.05  2009-04-27
 	- Fixed deprecation warnings with modern Moose. 
 	- Updated dependency version numbers
 	- Cleaned up extraneous use stricts
 	- Deprecate check_worker_threashold cause it's a typo
+
 0.04  Dec 31 2008
 	- Added put_worker to send input to a worker
 	- Added kill_worker to terminate a wheel
 	- Exposed more of the engine details
+
 0.03  Mon Oct 1 2007
 	- Moved worker_started into an event so add_worker returns
 	  before it's called (dec)
@@ -26,8 +38,10 @@ Revision history for MooseX-Workers
 	- Fixed a bug where worker_start was actually calling worker_stop 
 	  in the visitor (thanks to ash and perlmonkey2 for noticing)
 	- new spawn() interface that returns the Wheel ID and PID
+
 0.02  Wed Sep 19 16:00:00 2007
 	- Fix a bug where worker_started wasn't being very optional (discovered by Kake)
 	- Fix some packaging issues and tests
+
 0.01  Mon Jul 16 20:38:32 2007
 	   Initial release.
