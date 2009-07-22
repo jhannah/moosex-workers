@@ -2,11 +2,8 @@ Revision history for MooseX-Workers
 
 0.09  2009-07-22 jhannah
    - confound and Sartak tell me that 'weaken' is wrong. Changed to 'weak_ref'.
-   - Some CPAN testers are running these tests on very-overloaded machines, so
-     some of my "1 seconds or less" assumptions were bad for some clients.
-     Tests changed so that now slow / overloaded machines have 10 seconds to
-     do simple things.
-   - Abandoning testing how long things take wherever possible.
+   - doy suggests abandoning testing how long things take. Instead, design less 
+     fragile tests for things happening or not. 
 
 0.08  2009-07-14 jhannah
    - MooseX::Workers::Job 'args' attribute can now actually be used.

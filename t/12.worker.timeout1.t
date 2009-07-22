@@ -1,12 +1,9 @@
-use Test::More tests => 7;
+use Test::More tests => 6;
 use lib qw(lib);
 use strict;
 
 # This timeout demonstration covers the case where the timeout is envoked before the
 # child exits on it's own. 
-
-my $starttime = time;
-# print "starttime is $starttime\n";
 
 {
     package Manager;
@@ -29,7 +26,7 @@ my $starttime = time;
 
     sub worker_stderr {
         my ( $self, $output, $wheel ) = @_;
-        ::is( $output, "WORLD", "STDERR" );
+        ::fail("STDERR should never happen. We should have timed out and not gotten here.");
     }
 
     sub worker_error { ::fail('Got error?'.@_) }
@@ -41,8 +38,7 @@ my $starttime = time;
 
     sub worker_done  { 
         my ( $self, $job ) = @_;
-        my $now = time;
-        ::cmp_ok($now, '<', $starttime + 10, "worker done in < 10 seconds");
+        ::pass("worker_done");
     }
 
     sub worker_started { 
@@ -53,7 +49,7 @@ my $starttime = time;
     sub run { 
         my $job = MooseX::Workers::Job->new(
             timeout => 1,
-            command => sub { print "HELLO\n"; print STDERR "WORLD\n"; sleep 10; },
+            command => sub { print "HELLO\n"; sleep 2; print STDERR "WORLD\n"; },
         );
         $_[0]->run_command( $job );
         POE::Kernel->run();
