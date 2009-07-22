@@ -82,7 +82,7 @@ sub _stop {
 }
 
 sub add_worker {
-    my ( $self, $cmd ) = @_[ OBJECT, ARG0 ];
+    my ( $self, $cmd, $kernel ) = @_[ OBJECT, ARG0, KERNEL ];
     ::pass("add command");
     my $wheel = POE::Wheel::Run->new(
         Program     => $cmd,                  # Program to run.
@@ -91,6 +91,7 @@ sub add_worker {
         CloseEvent  => "got_child_close",     # Child stopped writing.
     );
     $self->workers->{ $wheel->ID } = $wheel;
+    $kernel->sig_child($wheel->PID, "got_child_closed");
 }
 
 # Deal with information the child wrote to its STDOUT.

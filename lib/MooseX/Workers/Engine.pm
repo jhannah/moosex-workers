@@ -159,6 +159,8 @@ sub add_worker {
         ErrorEvent  => '_worker_error',
         CloseEvent  => '_worker_done',
     );
+    $kernel->sig_child($wheel->PID, "_sig_child");
+
     $self->set_worker( $wheel->ID => $wheel );
     $self->set_process( $wheel->PID => $wheel->ID );
     if ( blessed($job) && $job->isa('MooseX::Workers::Job') ) {
@@ -186,7 +188,6 @@ sub _start {
     my ($self) = $_[OBJECT];
     $self->visitor->worker_manager_start()
       if $self->visitor->can('worker_manager_start');
-    $_[KERNEL]->sig( CHLD => '_sig_child' );
 }
 
 sub _stop {
@@ -269,6 +270,7 @@ sub _worker_started {
         }
     }
 }
+
 
 no Moose;
 1;
@@ -399,23 +401,23 @@ MooseX::Worker::Engine fires the following callbacks:
 
 =item worker_manager_start
 
-Called when the managing session is started
+Called when the managing session is started.
 
 =item worker_manager_stop
 
-Called when the managing session stops
+Called when the managing session stops.
 
 =item max_workers_reached
 
-Called when we reach the maximum number of workers
+Called when we reach the maximum number of workers.
 
 =item worker_stdout
 
-Called when a child prints to STDOUT
+Called when a child prints to STDOUT.
 
 =item worker_stderr
 
-Called when a child prints to STDERR
+Called when a child prints to STDERR.
 
 =item worker_error
 
@@ -423,15 +425,15 @@ Called when there is an error condition detected with the child.
 
 =item worker_done
 
-Called when a worker completes $command
+Called when a worker completes $command.
 
 =item worker_started
 
-Called when a worker starts $command
+Called when a worker starts $command.
 
 =item sig_child($PID, $ret)
 
-Called when the mangaging session recieves a SIG CHDL event
+Called when the managing session receives a SIG CHLD event.
 
 =back
 

@@ -4,6 +4,9 @@ Revision history for MooseX-Workers
    - confound and Sartak tell me that 'weaken' is wrong. Changed to 'weak_ref'.
    - doy suggests abandoning testing how long things take. Instead, design less 
      fragile tests for things happening or not. 
+   - Fixed and cleaned up sig_child, added a test. Got rid of all those annoying 
+     POE warnings about unhandled reap events. 
+   - Misc. POD cleanup.
 
 0.08  2009-07-14 jhannah
    - MooseX::Workers::Job 'args' attribute can now actually be used.

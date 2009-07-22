@@ -1,4 +1,4 @@
-use Test::More tests => 6;
+use Test::More tests => 7;
 use lib qw(lib);
 use strict;
 
@@ -46,6 +46,11 @@ use strict;
     sub worker_started { 
         my ( $self, $job ) = @_;
         ::pass("worker started");
+    }
+    
+    sub sig_child { 
+        my ( $self, $job ) = @_;
+        ::pass("sig_child");
     }
     
     sub run { 
