@@ -6,6 +6,7 @@ Revision history for MooseX-Workers
      some of my "1 seconds or less" assumptions were bad for some clients.
      Tests changed so that now slow / overloaded machines have 10 seconds to
      do simple things.
+   - Abandoning testing how long things take wherever possible.
 
 0.08  2009-07-14 jhannah
    - MooseX::Workers::Job 'args' attribute can now actually be used.
