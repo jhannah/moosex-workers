@@ -37,7 +37,6 @@ has workers => (
 has session => (
     isa      => 'POE::Session',
     is       => 'ro',
-    required => 1,
     weak_ref => 1,
     default  => sub {
         return POE::Session->create(
