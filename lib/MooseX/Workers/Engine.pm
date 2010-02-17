@@ -1,11 +1,9 @@
 package MooseX::Workers::Engine;
 use Moose;
 use POE qw(Wheel::Run);
-use MooseX::AttributeHelpers;
 
 has visitor => (
     is       => 'ro',
-    required => 1,
     does     => 'MooseX::Workers',
 );
 
@@ -17,60 +15,58 @@ has max_workers => (
 
 # Processes currently running
 has process_list => (
-    metaclass  => 'Collection::Hash',
+    traits     => [ 'Hash' ],
     isa        => 'HashRef',
-    is         => 'ro',
-    auto_deref => 1,
     default    => sub { {} },
-    provides   => {
-        set    => 'set_process',
-        get    => 'get_process',
-        delete => 'remove_process',
+    handles    => {
+        set_process    => 'set',
+        get_process    => 'get',
+        remove_process => 'delete',
+        process_list   => 'kv',
     }
 );
 
 # Processes waiting to run
 has process_queue => (
-    metaclass  => 'Collection::Array',
+    traits     => [ 'Array' ],
     isa        => 'ArrayRef',
-    is         => 'rw',
-    auto_deref => 1,
     default    => sub { [] },
-    provides   => {
-        'push'  => 'enqueue_process',
-        'shift' => 'dequeue_process',
+    handles    => {
+        enqueue_process => 'push',
+        dequeue_process => 'shift',
+        process_queue   => 'elements',
     }
 );
 
 has workers => (
+    traits    => [ 'Hash' ],
     isa       => 'HashRef',
     is        => 'rw',
     lazy      => 1,
     required  => 1,
     default   => sub { {} },
-    metaclass => 'Collection::Hash',
-    provides  => {
-        'set'    => 'set_worker',
-        'get'    => 'get_worker',
-        'delete' => 'remove_worker',
-        'empty'  => 'has_workers',
-        'count'  => 'num_workers',
+    handles   => {
+        set_worker    => 'set',
+        get_worker    => 'get',
+        remove_worker => 'delete',
+        has_workers   => 'count',
+        num_workers   => 'count',
     },
 );
 
 has jobs => (
+    traits    => [ 'Hash' ],
     isa       => 'HashRef',
     is        => 'rw',
     lazy      => 1,
     required  => 1,
     default   => sub { {} },
-    metaclass => 'Collection::Hash',
-    provides  => {
-        'set'    => 'set_job',
-        'get'    => 'get_job',
-        'delete' => 'remove_job',
-        'empty'  => 'has_jobs',
-        'count'  => 'num_jobs',
+    handles   => {
+        set_job    => 'set',
+        get_job    => 'get',
+        remove_job => 'delete',
+        has_jobs   => 'count',
+        num_jobs   => 'count',
     },
 );
 
