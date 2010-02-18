@@ -12,7 +12,6 @@ use strict;
 package WheelTester;
 use Moose;
 use POE qw( Wheel::Run );
-use MooseX::AttributeHelpers;
 # Start the session.  Spawn a simple program, and describe the events
 # it will generate as it does things.
 
@@ -22,14 +21,14 @@ has workers => (
     lazy      => 1,
     required  => 1,
     default   => sub { {} },
-    metaclass => 'Collection::Hash',
-    provides  => {
-        'set'    => 'set_worker',
-        'get'    => 'get_worker',
-        'delete' => 'delete_worker',
-        'empty'  => 'has_workers',
-        'count'  => 'num_workers',
-    },
+    traits    => [ 'Hash' ],
+    handles   => {
+        set_worker    => 'set',
+        get_worker    => 'get',
+        delete_worker => 'delete',
+        has_workers   => 'count',
+        num_workers   => 'count',
+    }
 );
 
 # Start a session where each event is handled by a function with the
