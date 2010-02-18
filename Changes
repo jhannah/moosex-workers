@@ -1,5 +1,9 @@
 Revision history for MooseX-Workers
 
+0.10  2010-02-17 arcanez
+   - get rid of MXAH in favor of Native::Trait, also remove auto_deref in favor 
+     of Native::Trait handles
+
 0.09  2009-07-22 jhannah
    - confound and Sartak tell me that 'weaken' is wrong. Changed to 'weak_ref'.
    - doy suggests abandoning testing how long things take. Instead, design less 

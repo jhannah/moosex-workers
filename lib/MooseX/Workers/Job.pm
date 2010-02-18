@@ -52,14 +52,9 @@ L<MooseX::Workers> job, or if you want them to timeout (abort)
 after a certain number of seconds.
 
 
-=head1 AUTHORS
-
-Jay Hannah C<< <jay@jays.net> >>
-
-
 =head1 LICENCE AND COPYRIGHT
 
-Copyright (c) 2009, Chris Prather C<< <perigrin@cpan.org> >>. Some rights reserved.
+Copyright (c) 2009-2010, Chris Prather C<< <perigrin@cpan.org> >>. Some rights reserved.
 
 This module is free software; you can redistribute it and/or
 modify it under the same terms as Perl itself. See L<perlartistic>.
