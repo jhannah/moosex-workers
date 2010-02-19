@@ -3,6 +3,10 @@ Revision history for MooseX-Workers
 0.10_01  2010-02-18 arcanez
    - Oops. We left MooseX::AttributeHelpers in t/02.wheel.t, making some testers fail.
      Submitting this correction to the smoking section to see if we missed anything else.
+        (MX::Workers + MXAH 0.22+ worked fine (02.wheel.t), 
+         but Moose 0.90+ and MXAH < 0.22 do not.
+         And since MX::Workers 0.10 requires Moose 0.90 and doesn't
+         specify any MXAH.. issues occurred.)
 
 0.10  2010-02-17 arcanez
    - get rid of MXAH in favor of Native::Trait, also remove auto_deref in favor 
