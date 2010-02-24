@@ -184,6 +184,17 @@ sub _start {
     my ($self) = $_[OBJECT];
     $self->visitor->worker_manager_start()
       if $self->visitor->can('worker_manager_start');
+
+    # Register the generic signal handler for any signals our visitor
+    # class wishes to receive.
+    my @visitor_methods = map { $_->name } $self->visitor->meta->get_all_methods;
+    for my $sig_handler (grep { /^sig_/ } @visitor_methods){
+        (my $sig) = ($sig_handler =~ /^sig_(.*)/);
+        next if uc($sig) eq 'CHLD' or uc($sig) eq 'CHILD';
+
+        $poe_kernel->state( $sig_handler, $self, '_sig_handler' );
+        $poe_kernel->sig( $sig => $sig_handler );
+    }
 }
 
 sub _stop {
@@ -198,6 +209,13 @@ sub _sig_child {
     $self->visitor->sig_child( $self->get_process($_[ARG1]), $_[ARG2] )
       if $self->visitor->can('sig_child');
     $self->remove_process( $_[ARG1] );
+    $_[KERNEL]->sig_handled();
+}
+
+# A generic sig handler (for everything except SIGCHLD)
+sub _sig_handler {
+    my ($self, $state) = @_[OBJECT,STATE];
+    $self->visitor->$state( @_[ARG0..ARG9] );
     $_[KERNEL]->sig_handled();
 }
 
