@@ -15,6 +15,8 @@ has args => (
 );
 
 sub BUILD {
+    my ($self) = @_;
+    print "BUILD here. command is " . $self->command . "\n";
     $self->add_worker( $self->command ) for $self->max_workers;
 }
 
