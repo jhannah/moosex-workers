@@ -1,8 +1,6 @@
-use Test::More tests => 7;
+use Test::More tests => 14;
 use lib qw(lib);
 use strict;
-
-# If I have no sig_term() sub then nothing happens when I SIG TERM myself.
 
 {
     package Manager;
@@ -33,14 +31,9 @@ use strict;
     sub worker_started { 
         my ( $self, $job ) = @_;
         ::pass("worker started");
-        kill "TERM", $$;    # Send the worker manager the TERM signal
+        kill "TERM", $$;    # Send the worker manager (myself) the TERM signal
     }
     
-    sub sig_TERM  { 
-        my ( $self, $job ) = @_;
-        ::pass("worker manager trapped the TERM signal");
-    }
-
     sub worker_done  { 
         my ( $self, $job ) = @_;
         ::pass("worker_done");
@@ -56,6 +49,21 @@ use strict;
     no Moose;
 }
 
+
+# --------------------------------
+# When we have no sig_TERM(), so we should fall back to our vanilla non-POE TERM trap.
+# --------------------------------
+$SIG{TERM} = sub { ::pass('non-POE TERM trapped') };
+Manager->new()->run();
+
+# --------------------------------
+# But as soon as we define sig_TERM(), we should hit that one and not the Perl one.
+# --------------------------------
+$SIG{TERM} = sub { ::fail('non-POE TERM trapped') };
+Manager->meta->add_method( sig_TERM => sub { 
+   my ( $self, $job ) = @_;
+   ::pass("worker manager trapped the TERM signal");
+});
 Manager->new()->run();
 
 
