@@ -10,10 +10,7 @@ parent manager process receives a TERM signal.
 use Moose;
 with qw(MooseX::Workers);
 
-BEGIN { 
-	$ENV{CATALYST_ENGINE} = 'Stomp';
-	require Catalyst::Engine::Stomp;
-}  
+use lib ".";
 
 #sub POE::Kernel::ASSERT_DEFAULT () { 1 }
 #sub POE::Kernel::TRACE_SIGNALS ()  { 1 }
@@ -95,7 +92,7 @@ sub worker_done    {
 sub worker_started { shift; process_output("Worker $_[0] started", 0) }
 sub sig_child      { shift; process_output("Worker $_[0] exited with signal $_[1]", 0) }
 
-sub sig_term {
+sub sig_TERM {
     my ($self) = @_;
     $self->_kill_workers();
     $self->num_workers = 0; # worker_done() would restart them otherwise
