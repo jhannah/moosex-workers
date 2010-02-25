@@ -1,4 +1,4 @@
-use Test::More tests => 6;
+use Test::More tests => 7;
 use lib qw(lib);
 use strict;
 
@@ -33,12 +33,12 @@ use strict;
     sub worker_started { 
         my ( $self, $job ) = @_;
         ::pass("worker started");
-        kill "TERM", $$;
+        kill "TERM", $$;    # Send the worker manager the TERM signal
     }
     
-    sub sig_term  { 
+    sub sig_TERM  { 
         my ( $self, $job ) = @_;
-        ::pass("worker_term got SIG TERM");
+        ::pass("worker manager trapped the TERM signal");
     }
 
     sub worker_done  { 
@@ -48,7 +48,7 @@ use strict;
 
     sub run { 
         my $job = MooseX::Workers::Job->new(
-            command => sub { print "HELLO\n"; sleep 1; print STDERR "WORLD\n"; },
+            command => sub { print "HELLO\n"; print STDERR "WORLD\n"; },
         );
         $_[0]->run_command( $job );
         POE::Kernel->run();
