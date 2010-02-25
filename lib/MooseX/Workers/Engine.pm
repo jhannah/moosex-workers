@@ -411,7 +411,7 @@ See POE::Wheel::Run for more details.
 
 =head1 INTERFACE 
 
-MooseX::Worker::Engine fires the following callbacks:
+MooseX::Worker::Engine fires the following callbacks to its visitor object:
 
 =over
 
@@ -450,6 +450,20 @@ Called when a worker starts $command.
 =item sig_child($PID, $ret)
 
 Called when the managing session receives a SIG CHLD event.
+
+=item sig_*
+
+Called when the underlying POE Kernel receives a signal; this is not limited to
+OS signals (ie. what you'd usually handle in Perl's %SIG) so will also accept
+arbitrary POE signals (sent via POE::Kernel->signal), but does exclude
+SIGCHLD/SIGCHILD, which is instead handled by sig_child above.
+
+These interface methods are automatically inserted when MooseX::Worker::Engine
+detects that the visitor object contains any methods beginning with sig_.
+Signals are case-sensitive, so if you wish to handle a TERM signal, you must
+define a sig_TERM() method.  Note also that this action is performed upon
+MooseX::Worker::Engine startup, so any run-time modification of the visitor
+object is not likely to be detected.
 
 =back
 

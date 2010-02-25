@@ -75,12 +75,13 @@ MooseX::Workers - Simple sub-process management for asynchronous tasks
     sub worker_manager_stop  { warn 'stopped worker manager' }
     sub max_workers_reached  { warn 'maximum worker count reached' }
 
-    sub worker_stdout  { shift; warn join ' ', @_; }
-    sub worker_stderr  { shift; warn join ' ', @_; }
-    sub worker_error   { shift; warn join ' ', @_; }
-    sub worker_done    { shift; warn join ' ', @_; }
-    sub worker_started { shift; warn join ' ', @_; }
-    sub sig_child      { shift; warn join ' ', @_; }
+    sub worker_stdout  { shift; warn join ' ', @_;  }
+    sub worker_stderr  { shift; warn join ' ', @_;  }
+    sub worker_error   { shift; warn join ' ', @_;  }
+    sub worker_done    { shift; warn join ' ', @_;  }
+    sub worker_started { shift; warn join ' ', @_;  }
+    sub sig_child      { shift; warn join ' ', @_;  }
+    sub sig_TERM       { shift; warn 'Handled TERM' }
     no Moose;
 
     Manager->new->run();
@@ -182,6 +183,24 @@ Called when a worker starts $command
 =item sig_child
 
 Called when the mangaging session recieves a SIG CHDL event
+
+=item sig_*
+
+Called when the underlying POE Kernel receives a signal; this is not limited to
+OS signals (ie. what you'd usually handle in Perl's %SIG) so will also accept
+arbitrary POE signals (sent via POE::Kernel->signal), but does exclude
+SIGCHLD/SIGCHILD, which is instead handled by sig_child above.
+
+These interface methods are automatically inserted when MooseX::Worker::Engine
+detects that your manager class contains any methods beginning with sig_.
+Signals are case-sensitive, so if you wish to handle a TERM signal, you must
+define a sig_TERM() method.  Note also that this action is performed upon
+MooseX::Worker::Engine startup, so any run-time modification of your class
+which 'does' MooseX::Workers is not likely to be detected.
+
+See the sig_TERM handler in the SYNOPSIS for an example.
+
+=back
 
 =back
 
