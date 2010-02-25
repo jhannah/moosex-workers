@@ -4,6 +4,9 @@ Revision history for MooseX-Workers
    - pmooney added get_worker_ids, the ability to trap SIG TERM, demo
    - dec wrote a generic signal handler instead of TERM-only.
    - jhannah wrote t/20.worker.SIG.TERM.t, showing sig_TERM() in action.
+   - jhannah tried to write tests for MooseX/Workers/Engine/PreforkPoe.pm (we had none),
+     but couldn't seem to get it to work. So apparently this was an experiment that never
+     got fully off the ground. Removed.
 
 0.11  2010-02-18 arcanez
    - 0.10_01 is testing well. Pushing as 0.11.

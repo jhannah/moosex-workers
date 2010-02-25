@@ -128,7 +128,6 @@ sub kill_worker {
 sub add_worker {
     my ( $self, $job, $args, $kernel, $heap ) = @_[ OBJECT, ARG0, ARG1, KERNEL, HEAP ];
 
-    $DB::single = 1;
     # if we've reached the worker threashold, set off a warning
     if ( $self->num_workers >= $self->max_workers ) {
         if ( $args->{enqueue} ) {
