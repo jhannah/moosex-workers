@@ -46,11 +46,12 @@ has workers => (
     required  => 1,
     default   => sub { {} },
     handles   => {
-        set_worker    => 'set',
-        get_worker    => 'get',
-        remove_worker => 'delete',
-        has_workers   => 'count',
-        num_workers   => 'count',
+        set_worker     => 'set',
+        get_worker     => 'get',
+        remove_worker  => 'delete',
+        has_workers    => 'count',
+        num_workers    => 'count',
+        get_worker_ids => 'keys',
     },
 );
 
@@ -116,7 +117,8 @@ sub put_worker {
 
 sub kill_worker {
     my ( $self, $wheel_id ) = splice @_, 0, 2;
-    $self->get_wheel($wheel_id)->kill(@_);
+    $self->get_worker($wheel_id)->kill(@_);
+    $self->remove_worker($wheel_id);
 }
 
 #
