@@ -187,6 +187,9 @@ sub _start {
     $self->visitor->worker_manager_start()
       if $self->visitor->can('worker_manager_start');
 
+    # Set an alias to ensure our manager session is not cleaned up.
+    $_[KERNEL]->alias_set("manager");
+
     # Register the generic signal handler for any signals our visitor
     # class wishes to receive.
     my @visitor_methods = map { $_->name } $self->visitor->meta->get_all_methods;
