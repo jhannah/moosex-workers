@@ -41,7 +41,7 @@ use strict;
 
     sub run { 
         my $job = MooseX::Workers::Job->new(
-            command => sub { print "HELLO\n"; print STDERR "WORLD\n"; },
+            command => sub { if ($^O eq 'MSWin32') { binmode STDOUT; binmode STDERR; } print "HELLO\n"; print STDERR "WORLD\n"; },
         );
         $_[0]->run_command( $job );
         POE::Kernel->run();

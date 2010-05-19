@@ -43,7 +43,11 @@ use strict;
     
     sub run { 
         for my $num (1..50) {
-            $_[0]->enqueue( sub { 
+            $_[0]->enqueue( sub {
+                if ($^O eq 'MSWin32') {
+                    binmode STDOUT;
+                    binmode STDERR;
+                } 
                 print "HELLO $num\n"; 
                 print STDERR "WORLD $num\n"; 
             } );

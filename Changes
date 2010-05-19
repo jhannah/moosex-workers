@@ -1,5 +1,8 @@
 Revision history for MooseX-Workers
 
+0.12_01  2010-05-19 Neil Stott
+   - $^O eq 'MSWin32' test patches to try to make Windows happy. (Neil Stott)
+
 0.12  2010-03-05 jhannah
    - 0.11_01 is testing well. Pushing as 0.12.
 
