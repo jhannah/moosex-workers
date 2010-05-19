@@ -1,6 +1,13 @@
-use Test::More tests => 14;
+use Test::More;
 use lib qw(lib);
 use strict;
+
+if ($^O eq 'MSWin32') {
+    plan skip_all => "$^O does not support signals";
+}
+else {
+    plan tests => 14;
+}
 
 {
     package Manager;
