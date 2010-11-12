@@ -1,6 +1,6 @@
 package MooseX::Workers::Engine;
 use Moose;
-use POE qw(Wheel::Run);
+use POE qw(Wheel::Run Filter::Reference);
 
 has visitor => (
     is       => 'ro',
