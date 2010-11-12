@@ -63,7 +63,10 @@ MooseX::Workers - Simple sub-process management for asynchronous tasks
 
 =head1 SYNOPSIS
 
+ EXAMPLE #1:
     package Manager;
+    #    This example prints output from the children normally on both STDOUT and STDERR
+
     use Moose;
     with qw(MooseX::Workers);
 
@@ -74,17 +77,84 @@ MooseX::Workers - Simple sub-process management for asynchronous tasks
     }
 
     # Implement our Interface
-    sub worker_manager_start { warn 'started worker manager' }
-    sub worker_manager_stop  { warn 'stopped worker manager' }
-    sub max_workers_reached  { warn 'maximum worker count reached' }
-
     sub worker_stdout  { shift; warn join ' ', @_;  }
     sub worker_stderr  { shift; warn join ' ', @_;  }
+
+    sub worker_manager_start { warn 'started worker manager' }
+    sub worker_manager_stop  { warn 'stopped worker manager' }
+
+    sub max_workers_reached  { warn 'maximum worker count reached' }
     sub worker_error   { shift; warn join ' ', @_;  }
     sub worker_done    { shift; warn join ' ', @_;  }
     sub worker_started { shift; warn join ' ', @_;  }
     sub sig_child      { shift; warn join ' ', @_;  }
     sub sig_TERM       { shift; warn 'Handled TERM' }
+
+    no Moose;
+
+    Manager->new->run();
+
+
+ EXAMPLE #2:
+    package Manager;
+
+    #    This example prints output from the children normally on
+    #    STDERR but uses STDOUT to returns a hashref from the child to
+    #    the parent
+
+    use Moose;
+    with qw(MooseX::Workers);
+    use POE qw(Filter::Reference Filter::Line);
+
+    sub run {
+        $_[0]->spawn(
+            sub {
+                sleep 3;
+
+                #    Return a hashref (arrayref, whatever) to the parent using P::F::Reference
+                print POE::Filter::Reference->new->put([ {msg => "Hello World"} ]); # Note the [] around the return val
+
+                #    Print normally using P::F::Line (shown for
+                #    completeness; in practice, just don't bother
+                #    defining the _filter method
+                #    
+                print STDERR "Hey look, an error message";
+            }
+        );
+
+        POE::Kernel->run();
+    }
+
+    # Implement our Interface
+    #    These two are both optional; if defined (as here), they
+    #    should return a subclass of POE::Filter.
+    sub stdout_filter  { new POE::Filter::Reference }
+    sub stderr_filter  { new POE::Filter::Line }
+
+    sub worker_stdout  {  
+        my ( $self, $result ) = @_;  #  $result will be a hashref:  {msg => "Hello World"} 
+		print $result->{msg};
+
+        #    Note that you can do more than just print the message --
+        #    e.g. this is the way to return data from the children for
+        #    accumulation in the parent.  
+	}
+    sub worker_stderr  {
+        my ( $self, $stderr_msg ) = @_;  #  $stderr_msg will be a string: "Hey look, an error message";
+        warn $stderr_msg;
+    }
+
+    #     From here down, this is identical to the previous example.
+    sub worker_manager_start { warn 'started worker manager' }
+    sub worker_manager_stop  { warn 'stopped worker manager' }
+
+    sub max_workers_reached  { warn 'maximum worker count reached' }
+    sub worker_error   { shift; warn join ' ', @_;  }
+    sub worker_done    { shift; warn join ' ', @_;  }
+    sub worker_started { shift; warn join ' ', @_;  }
+    sub sig_child      { shift; warn join ' ', @_;  }
+    sub sig_TERM       { shift; warn 'Handled TERM' }
+
     no Moose;
 
     Manager->new->run();
@@ -163,13 +233,31 @@ Called when the managing session stops
 
 Called when we reach the maximum number of workers
 
+=item stdout_filter
+
+OPTIONAL.  If defined, this should return an object that isa
+POE::Filter.  If it doesn't, the results are undefined.  Anything that
+a child proc sends on STDOUT will be passed through the relevant
+filter.
+
+=item stderr_filter
+
+OPTIONAL.  If defined, this should return an object that isa
+POE::Filter.  If it doesn't, the results are undefined.  Anything that
+a child proc sends on STDERR will be passed through the relevant
+filter.
+
 =item worker_stdout
 
-Called when a child prints to STDOUT
+Called when a child prints to STDOUT.  If C<stdout_filter> was
+defined, the output will be filtered appropriately, as described
+above.  This is useful to allow child processes to return data to the
+parent (generally via POE::Filter::Reference).
 
 =item worker_stderr
 
-Called when a child prints to STDERR
+Called when a child prints to STDERR.  Filtered through the result of
+C<stderr_filter> if that method is defined.
 
 =item worker_error
 
