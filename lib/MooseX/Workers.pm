@@ -45,10 +45,13 @@ sub check_worker_threshold {
 }
 
 sub check_worker_threashold {
-    warn 'check_worker_threashold is deprecated '
+    warn 'check_worker_threashold (note the typo) is deprecated '
       . 'please use check_worker_threshold instead';
     shift->check_worker_threshold;
 }
+
+sub stdout_filter { undef }
+sub stderr_filter { undef }
 
 no Moose::Role;
 1;

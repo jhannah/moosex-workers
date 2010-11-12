@@ -1,6 +1,6 @@
 package MooseX::Workers::Engine;
 use Moose;
-use POE qw(Wheel::Run Filter::Reference);
+use POE qw(Wheel::Run);
 
 has visitor => (
     is       => 'ro',
@@ -121,6 +121,16 @@ sub kill_worker {
     $self->remove_worker($wheel_id);
 }
 
+sub stdout_filter {
+	my $self = $_[OBJECT];
+	$self->visitor->stdout_filter;
+}
+
+sub stderr_filter {
+	my $self = $_[OBJECT];
+	$self->visitor->stderr_filter;
+}
+
 #
 # EVENTS
 #
@@ -148,10 +158,16 @@ sub add_worker {
         $command = $job;
     }
 
+	my @optional_io_filters;
+	push @optional_io_filters, 'StdoutFilter', $self->stdout_filter   if $self->stdout_filter;
+	push @optional_io_filters, 'StderrFilter', $self->stderr_filter   if $self->stderr_filter;
+	
     $args = [$args] unless ref $args eq 'ARRAY';
+
     my $wheel = POE::Wheel::Run->new(
         Program     => $command,
         ProgramArgs => $args,
+		@optional_io_filters,
         StdoutEvent => '_worker_stdout',
         StderrEvent => '_worker_stderr',
         ErrorEvent  => '_worker_error',
