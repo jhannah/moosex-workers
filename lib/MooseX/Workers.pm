@@ -331,6 +331,8 @@ Jay Hannah C<< <jay@jays.net> >>
 
 Justin Hunter C<< <justin.d.hunter@gmail.com> >>
 
+David K. Storrs C<< <david.storrs@gmail.com> >>
+
 
 =head1 LICENCE AND COPYRIGHT
 
