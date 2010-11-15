@@ -1,8 +1,9 @@
 Revision history for MooseX-Workers
 
-0.12_01 2010-11-13
+0.13 2010-11-15
   - 2010-11-12 David K. Storrs (github.com/dstorrs)
     Added POE::Filter::Reference support.
+    Added more tests
   - 2010-05-19 Neil Stott
     $^O eq 'MSWin32' test patches to try to make Windows happy. 
 
