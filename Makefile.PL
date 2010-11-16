@@ -9,6 +9,7 @@ auto_set_repository;
 # Specific dependencies
 requires 'Moose'                    => '0.90';
 requires 'POE'                      => '1.004';
+requires 'DateTime'                 => 0;
 
 build_requires 'Test::More' => '0.42';
 

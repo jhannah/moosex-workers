@@ -1,5 +1,8 @@
 Revision history for MooseX-Workers
 
+0.14 2010-11-16
+  - Oops. DateTime is a new dep from David's new test.
+
 0.13 2010-11-15
   - 2010-11-12 David K. Storrs (github.com/dstorrs)
     Added POE::Filter::Reference support.
