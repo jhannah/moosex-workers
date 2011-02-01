@@ -5,12 +5,28 @@ our $VERSION = '0.14';      # http://www.cpan.org/modules/04pause.html - Develop
 
 use MooseX::Workers::Engine;
 
+has _ctor_params => (
+	is => 'ro',
+	isa => 'HashRef',
+	lazy => 1,
+	default => sub { {} },
+);
+
+around BUILDARGS => sub {
+	my ($orig, $class, %args) = @_;
+
+	shift;
+	shift;
+	
+	return $class->$orig( _ctor_params => \%args, @_ );
+};
+
 has Engine => (
     isa      => 'MooseX::Workers::Engine',
     is       => 'ro',
     lazy     => 1,
     required => 1,
-    default  => sub { MooseX::Workers::Engine->new( visitor => $_[0] ) },
+    builder  => '_build_Engine',
     handles  => [
         qw(
           max_workers
@@ -22,6 +38,12 @@ has Engine => (
           )
     ],
 );
+sub _build_Engine {
+	my $self = shift;
+	my @args;
+	push @args,  max_workers => $self->_ctor_params->{max_workers} if exists $self->_ctor_params->{max_workers};
+	MooseX::Workers::Engine->new( visitor => $self, @args );
+}
 
 sub spawn {
     my ( $self, $cmd, $args ) = @_;
