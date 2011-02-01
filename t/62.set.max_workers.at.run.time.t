@@ -1,9 +1,6 @@
-#!/usr/bin/perl
-
-use lib '../lib';
-use lib 'lib';
+use Test::More tests => 2;
+use lib qw(lib t/lib);
 use BaseClass::Subclass;
-use Test::More;
 
 sub make_man { BaseClass::Subclass->new( @_ ) }
 
@@ -15,4 +12,3 @@ $man->max_workers( 20 );
 
 is( $man->max_workers, 20, "Can reset the max_workers param at run time" );
 
-done_testing();

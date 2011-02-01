@@ -1,5 +1,8 @@
 Revision history for MooseX-Workers
 
+0.14_01 2011-02-01 David K. Storrs
+  - MXW now saves its ctor-time params so they can be passed on to Engine later 
+
 0.14 2010-11-16
   - Oops. DateTime is a new dep from David's new test.
 
