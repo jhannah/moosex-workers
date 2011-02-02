@@ -1,7 +1,7 @@
 package MooseX::Workers;
 use Moose::Role;
 use MooseX::Workers::Job;
-our $VERSION = '0.14_01';      # http://www.cpan.org/modules/04pause.html - Developer releases
+our $VERSION = '0.15';      # http://www.cpan.org/modules/04pause.html - Developer releases
 
 use MooseX::Workers::Engine;
 
