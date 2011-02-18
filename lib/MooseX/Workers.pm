@@ -150,8 +150,8 @@ MooseX::Workers - Simple sub-process management for asynchronous tasks
     # Implement our Interface
     #    These two are both optional; if defined (as here), they
     #    should return a subclass of POE::Filter.
-    sub stdout_filter  { new POE::Filter::Reference }
-    sub stderr_filter  { new POE::Filter::Line }
+    sub stdout_filter  { POE::Filter::Reference->new }
+    sub stderr_filter  { POE::Filter::Line->new }
 
     sub worker_stdout  {  
         my ( $self, $result ) = @_;  #  $result will be a hashref:  {msg => "Hello World"} 

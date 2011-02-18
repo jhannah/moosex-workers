@@ -8,7 +8,7 @@ use lib qw(lib);
 	use POE::Filter::Line;
     with qw(MooseX::Workers);
 
-	sub stdout_filter { ::pass("stdout_filter was called"); new POE::Filter::Line; }
+	sub stdout_filter { ::pass("stdout_filter was called"); POE::Filter::Line->new; }
 	
     sub worker_manager_start {
         ::pass('started worker manager');

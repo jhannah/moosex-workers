@@ -8,7 +8,7 @@ use lib qw(lib);
 	use POE::Filter::Reference;
     with qw(MooseX::Workers);
 
-	sub stdout_filter { ::pass("stdout_filter was called"); new POE::Filter::Reference; }
+	sub stdout_filter { ::pass("stdout_filter was called"); POE::Filter::Reference->new; }
 	
     sub worker_manager_start {
         ::pass('started worker manager');

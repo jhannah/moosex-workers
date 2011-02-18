@@ -10,7 +10,7 @@ use lib qw(lib);
 
 	my @results;
 	
-	sub stdout_filter { new POE::Filter::Reference; }
+	sub stdout_filter { POE::Filter::Reference->new; }
 	
     sub worker_manager_start {
         ::is( scalar @results, 0, 'Started with an empty @results array' );
