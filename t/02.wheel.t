@@ -89,7 +89,7 @@ sub add_worker {
         CloseEvent  => "got_child_close",     # Child stopped writing.
     );
     $self->workers->{ $wheel->ID } = $wheel;
-    $kernel->sig_child($wheel->PID, "got_child_closed");
+    $kernel->sig_child($wheel->PID, "got_child_close");
 }
 
 # Deal with information the child wrote to its STDOUT.

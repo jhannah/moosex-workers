@@ -182,7 +182,7 @@ sub add_worker {
        $job->PID($wheel->PID);
        $self->set_job( $wheel->ID => $job );
        if ($job->timeout) {
-          $$heap{wheel_to_timer}{$wheel->ID} =
+          $heap->{wheel_to_timer}{$wheel->ID} =
              $kernel->delay_set('_kill_worker', $job->timeout, $wheel->ID);
        }
     } 
@@ -267,7 +267,7 @@ sub _worker_error {
 sub _worker_done {
     my ($self, $wheel_id, $kernel, $heap) = @_[ OBJECT, ARG0, KERNEL, HEAP ];
     my $job = $self->get_job($wheel_id);
-    $kernel->alarm_remove(delete $$heap{wheel_to_timer}{$wheel_id});
+    $kernel->alarm_remove(delete $heap->{wheel_to_timer}{$wheel_id}) if $heap->{wheel_to_timer}{$wheel_id};
     if ($self->visitor->can('worker_done')) {
         if ($job) {
             $self->visitor->worker_done( $job );
