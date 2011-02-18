@@ -134,7 +134,7 @@ MooseX::Workers - Simple sub-process management for asynchronous tasks
                 sleep 3;
 
                 #    Return a hashref (arrayref, whatever) to the parent using P::F::Reference
-                print POE::Filter::Reference->new->put([ {msg => "Hello World"} ]); # Note the [] around the return val
+                print @{POE::Filter::Reference->new->put([ {msg => "Hello World"} ])}; # Note the [] around the return val
 
                 #    Print normally using P::F::Line (shown for
                 #    completeness; in practice, just don't bother
