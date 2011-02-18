@@ -184,7 +184,7 @@ MooseX::Workers - Simple sub-process management for asynchronous tasks
 =head1 DESCRIPTION
 
 MooseX::Workers is a Role that provides easy delegation of long-running tasks 
-into a managed child process. Process managment is taken care of via POE and it's 
+into a managed child process. Process management is taken care of via POE and its 
 POE::Wheel::Run module.
 
 =head1 METHODS
@@ -201,9 +201,9 @@ These three methods are the whole point of this module.
 They pass $command through to the MooseX::Worker::Engine which will take 
 care of running $command for you.
 
-spawn() and fork() both envoke L<POE::Kernel> call(), which is synchronous.
+spawn() and fork() both invoke L<POE::Kernel> call(), which is synchronous.
 
-run_command() envokes L<POE::Kernel> yield(), which is asynchronous.
+run_command() invokes L<POE::Kernel> yield(), which is asynchronous.
 
 If max_workers() has been reached, run_command() warns and does nothing. It is up to you to re-submit
 $command. See enqueue() if you want us to run $command as soon as another worker is free.
@@ -221,7 +221,7 @@ if the $num_workers is >= $max_workers;
 
 =item max_workers($count)
 
-An accessor for the maxium number of workers. This is delegated to the MooseX::Workers::Engine object.
+An accessor for the maximum number of workers. This is delegated to the MooseX::Workers::Engine object.
 
 =item has_workers
 
@@ -295,7 +295,7 @@ Called when a worker starts $command
 
 =item sig_child
 
-Called when the mangaging session recieves a SIG CHDL event
+Called when the mangaging session recieves a SIG CHLD event
 
 =item sig_*
 

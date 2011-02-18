@@ -352,7 +352,7 @@ Hold a reference to our main object so we can use the callbacks on it.
 
 =item max_workers
 
-An Integer specifying the maxium number of workers we have.
+An Integer specifying the maximum number of workers we have.
 
 =item workers
 

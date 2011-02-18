@@ -2,8 +2,8 @@ use Test::More tests => 6;
 use lib qw(lib);
 use strict;
 
-# This timeout demonstration covers the case where the timeout is envoked before the
-# child exits on it's own. 
+# This timeout demonstration covers the case where the timeout is invoked before the
+# child exits on its own. 
 
 {
     package Manager;
