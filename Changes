@@ -1,4 +1,8 @@
 Revision history for MooseX-Workers
+   Full history: https://github.com/jhannah/moosex-workers
+
+0.16 2011-02-22 
+  - CPAN testers looks happy so pushing as 0.16.
 
 0.15_01 2011-02-18 arcanez
   - no indirect

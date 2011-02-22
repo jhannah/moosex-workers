@@ -1,7 +1,7 @@
 package MooseX::Workers;
 use Moose::Role;
 use MooseX::Workers::Job;
-our $VERSION = '0.15_01';      # http://www.cpan.org/modules/04pause.html - Developer releases
+our $VERSION = '0.16';      # http://www.cpan.org/modules/04pause.html - Developer releases
 
 use MooseX::Workers::Engine;
 
@@ -322,26 +322,17 @@ Also see L<MooseX::Workers::Job> if you'd like to give your tasks
 names, or set timeouts on them.
 
 
-=head1 CONFIGURATION AND ENVIRONMENT
-
-MooseX::Workers requires no configuration files or environment variables.
-
 =head1 DEPENDENCIES
 
 Moose, POE, POE::Wheel::Run
 
-=head1 INCOMPATIBILITIES
-
-None reported.
-
 =head1 BUGS AND LIMITATIONS
-
-No bugs have been reported.
 
 Please report any bugs or feature requests to
 C<bug-moosex-workers@rt.cpan.org>, or through the web interface at
 L<http://rt.cpan.org>.
 
+Version control: L<https://github.com/jhannah/moosex-workers>
 
 =head1 AUTHORS
 
@@ -358,7 +349,7 @@ David K. Storrs C<< <david.storrs@gmail.com> >>
 
 =head1 LICENCE AND COPYRIGHT
 
-Copyright (c) 2007-2010, Chris Prather C<< <perigrin@cpan.org> >>. Some rights reserved.
+Copyright (c) 2007-2011, Chris Prather C<< <perigrin@cpan.org> >>. Some rights reserved.
 
 This module is free software; you can redistribute it and/or
 modify it under the same terms as Perl itself. See L<perlartistic>.
