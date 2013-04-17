@@ -1,6 +1,8 @@
 Revision history for MooseX-Workers
    Full history: https://github.com/jhannah/moosex-workers
 
+{{$NEXT}}
+  - convert dist to Dist::Zilla
   - add worker_finished with correct num_workers/has_workers state, deprecate
     worker_done
 
