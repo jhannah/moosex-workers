@@ -2,6 +2,7 @@ Revision history for MooseX-Workers
    Full history: https://github.com/jhannah/moosex-workers
 
 {{$NEXT}}
+  - tell PAUSE not to index doc/
 
 0.17 2013-04-17 13:21:35
   - convert dist to Dist::Zilla
