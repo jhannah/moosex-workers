@@ -1,6 +1,9 @@
 Revision history for MooseX-Workers
    Full history: https://github.com/jhannah/moosex-workers
 
+  - add worker_finished with correct num_workers/has_workers state, deprecate
+    worker_done
+
 0.16 2011-02-22 
   - CPAN testers looks happy so pushing as 0.16.
 

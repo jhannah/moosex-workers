@@ -277,6 +277,10 @@ sub _worker_done {
     }
     $self->delete_worker( $wheel_id );
 
+    if (my $code = $self->visitor->can('worker_finished')) {
+        $self->visitor->$code($job ? $job : ());
+    }
+
     # If we have free workers and processes in queue, then dequeue one of them.
     while ( $self->num_workers < $self->max_workers && 
             (my $jobref = $self->dequeue_process)

@@ -81,7 +81,7 @@ sub max_workers_reached  { warn 'maximum worker count reached' }
 sub worker_stdout  { shift; process_output(@_) }
 sub worker_stderr  { shift; process_output(@_) }
 sub worker_error   { shift; warn join ' ', @_; }
-sub worker_done    {
+sub worker_finished    {
 	my $self = shift;
 	process_output('restarting...', 0);
 	$self->spawn( sub { 
@@ -95,7 +95,7 @@ sub sig_child      { shift; process_output("Worker $_[0] exited with signal $_[1
 sub sig_TERM {
     my ($self) = @_;
     $self->_kill_workers();
-    $self->num_workers = 0; # worker_done() would restart them otherwise
+    $self->num_workers = 0; # worker_finished() would restart them otherwise
 }
 
 no Moose;

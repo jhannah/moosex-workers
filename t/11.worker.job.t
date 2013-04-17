@@ -1,4 +1,4 @@
-use Test::More tests => 8;
+use Test::More tests => 11;
 use lib qw(lib);
 
 {
@@ -27,11 +27,14 @@ use lib qw(lib);
 
     sub worker_error { ::fail('Got error?'.@_) }
 
-    sub worker_done  { 
+    sub worker_finished  {
         my ( $self, $job ) = @_;
+        ::isa_ok( $self, __PACKAGE__ );
         ::is( $job->name, 'Foo',     '$job->name ' . $job->name );
         ::is( $job->ID,   1,         '$job->ID '   . $job->ID   );
         ::cmp_ok( $job->PID, '>', 0, '$job->PID '  . $job->PID  );
+        ::is( $self->num_workers, 0, 'num_workers == 0' );
+        ::ok( (not $self->has_workers), 'has_workers is false' );
     }
 
     sub worker_started { ::pass('worker started') }

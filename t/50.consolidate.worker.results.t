@@ -38,8 +38,8 @@ use lib qw(lib);
     sub worker_error {
 		::fail('Got error?'.@_)
 	}
-    sub worker_done  {
-		::pass('worker done')
+    sub worker_finished  {
+		::pass('worker finished')
 	}
 
     sub worker_started {

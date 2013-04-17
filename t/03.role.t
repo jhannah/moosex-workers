@@ -25,7 +25,7 @@ use lib qw(lib);
         ::is( $output, 'WORLD' );
     }
     sub worker_error { }
-    sub worker_done  { ::pass('worker done') }
+    sub worker_finished  { ::pass('worker finished') }
 
     sub worker_started { ::pass('worker started') }
     no Moose::Role;

@@ -41,9 +41,9 @@ else {
         kill "TERM", $$;    # Send the worker manager (myself) the TERM signal
     }
     
-    sub worker_done  { 
+    sub worker_finished  { 
         my ( $self, $job ) = @_;
-        ::pass("worker_done");
+        ::pass("worker_finished");
     }
 
     sub run { 

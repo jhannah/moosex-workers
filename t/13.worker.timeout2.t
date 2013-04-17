@@ -38,9 +38,9 @@ use strict;
         ::fail("worker timeout");
     }
 
-    sub worker_done  { 
+    sub worker_finished  { 
         my ( $self, $job ) = @_;
-        ::pass("worker_done");
+        ::pass("worker_finished");
     }
 
     sub worker_started { 

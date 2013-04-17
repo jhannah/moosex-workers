@@ -16,7 +16,7 @@ sub max_workers_reached  { warn 'maximum worker count reached' }
 sub worker_stdout  { shift; warn join ' ', @_; }
 sub worker_stderr  { shift; warn join ' ', @_; }
 sub worker_error   { shift; warn join ' ', @_; }
-sub worker_done    { shift; warn join ' ', @_; }
+sub worker_finished { warn 'worker finished' }
 sub worker_started { shift; warn join ' ', @_; }
 sub sig_child      { shift; warn join ' ', @_; }
 no Moose;

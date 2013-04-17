@@ -1,4 +1,4 @@
-use Test::More tests => 202;
+use Test::More tests => 252;
 use lib qw(lib);
 use strict;
 
@@ -31,7 +31,14 @@ use strict;
         my ( $self, $wheel ) = @_;
         # ::pass("worker $wheel done");
         my $num = $self->num_workers;
-        ::cmp_ok($num, '<=', 3, "num_workers: $num <= 3");
+        ::cmp_ok($num, '<=', 3, "worker_done: num_workers: $num <= 3");
+    }
+
+    sub worker_finished  { 
+        my ( $self, $wheel ) = @_;
+        # ::pass("worker $wheel done");
+        my $num = $self->num_workers;
+        ::cmp_ok($num, '<=', 2, "worker_finished: num_workers: $num <= 2");
     }
 
     sub worker_started { 
