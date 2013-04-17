@@ -2,6 +2,8 @@ Revision history for MooseX-Workers
    Full history: https://github.com/jhannah/moosex-workers
 
 {{$NEXT}}
+
+0.18 2013-04-17 13:36:15
   - tell PAUSE not to index doc/
 
 0.17 2013-04-17 13:21:35
