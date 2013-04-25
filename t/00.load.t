@@ -5,4 +5,6 @@ BEGIN {
 use_ok( 'MooseX::Workers' );
 }
 
-diag( "Testing MooseX::Workers $MooseX::Workers::VERSION" );
+my $ver = $MooseX::Workers::VERSION || '__UNRELEASED__';
+
+diag( "Testing MooseX::Workers $ver" );

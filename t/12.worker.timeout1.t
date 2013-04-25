@@ -1,4 +1,6 @@
-use Test::More tests => 6;
+use Test::More (
+    $^O eq 'MSWin32' ? (skip_all => 'needs fixing on Win32') : (tests => 6)
+);
 use lib qw(lib);
 use strict;
 

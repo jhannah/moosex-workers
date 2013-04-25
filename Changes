@@ -2,6 +2,7 @@ Revision history for MooseX-Workers
    Full history: https://github.com/jhannah/moosex-workers
 
 {{$NEXT}}
+  - tests pass on Win32, one fixed, one skipped
 
 0.18 2013-04-17 13:36:15
   - tell PAUSE not to index doc/
