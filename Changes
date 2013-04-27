@@ -2,6 +2,7 @@ Revision history for MooseX-Workers
    Full history: https://github.com/jhannah/moosex-workers
 
 {{$NEXT}}
+  - fix another test on Win32
 
 0.19 2013-04-25 07:55:52
   - tests pass on Win32, one fixed, one skipped
