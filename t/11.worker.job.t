@@ -41,7 +41,7 @@ use lib qw(lib);
     
     sub run { 
         my $job = MooseX::Workers::Job->new(
-           command => sub { if ($^O eq 'MSWin32') { binmode STDOUT; binmode STDERR; } print "HELLO\n"; print STDERR "WORLD\n" },
+           command => sub { print "HELLO\n"; print STDERR "WORLD\n" },
            name => 'Foo',
         );
         $_[0]->spawn( $job );

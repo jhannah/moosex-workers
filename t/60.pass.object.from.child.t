@@ -52,8 +52,6 @@ use lib qw(lib);
     sub run { 
 		$_[0]->enqueue(
 			sub {
-				if ($^O eq 'MSWin32') { binmode STDOUT; binmode STDERR; }
-
 				my $d = DateTime->new(   year => 2010,
 										 month => 11,
 										 day => 15,

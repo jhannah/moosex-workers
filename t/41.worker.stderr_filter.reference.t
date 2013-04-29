@@ -35,8 +35,6 @@ use lib qw(lib);
     sub run { 
         $_[0]->spawn(
 			sub {
-				if ($^O eq 'MSWin32') { binmode STDOUT; binmode STDERR; }
-
 				print STDOUT "HELLO";
 				print STDERR @{ POE::Filter::Reference->new->put([ {msg => "WORLD"} ]) };
 			}

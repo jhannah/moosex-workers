@@ -121,6 +121,6 @@ no Moose;
 package main;
 
 my $wt = WheelTester->new();
-$wt->run_command( sub { if ($^O eq 'MSWin32') { binmode STDOUT; binmode STDERR; } print "HELLO\n" } );
+$wt->run_command( sub { print "HELLO\n" } );
 POE::Kernel->run();
 

@@ -30,7 +30,7 @@ use lib qw(lib);
     sub worker_started { ::pass('worker started') }
     
     sub run { 
-        $_[0]->spawn( sub { if ($^O eq 'MSWin32') { binmode STDOUT; binmode STDERR; } print "HELLO\n"; print STDERR "WORLD\n" } );
+        $_[0]->spawn(sub { print "HELLO\n"; print STDERR "WORLD\n" } );
         POE::Kernel->run();
     }
     no Moose;

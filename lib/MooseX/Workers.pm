@@ -334,10 +334,25 @@ See L<MooseX::Workers::Engine> for more details.
 Also see L<MooseX::Workers::Job> if you'd like to give your tasks
 names, or set timeouts on them.
 
+=head1 WIN32 NOTES
 
-=head1 DEPENDENCIES
+You don't need to binmode the STDIN/STDOUT/STDERR streams in your coderefs, this
+is done for you. If you need utf8, it is safe to re-binmode them to
+C<:encoding(UTF-8)>.
 
-Moose, POE, POE::Wheel::Run
+Coderef workers that time out are killed with a SIGINT rather than a SIGTERM,
+because TERM does not behave compatibly (thanks Rocco!) This is done with a:
+
+    local $SIG{INT} = sub { exit 0 };
+
+that wraps the coderef.
+
+You cannot catch a TERM sent to the parent process (see L<perlport/kill>, use
+INT instead.
+
+External programs are run with L<Win32::Job> by L<POE::Wheel::Run>,
+L<Win32::ShellQuote> is used to quote the program and arguments. Use a
+L<MooseX::Workers::Job> with a string program and arrayref args for this.
 
 =head1 BUGS AND LIMITATIONS
 
@@ -359,10 +374,11 @@ Justin Hunter C<< <justin.d.hunter@gmail.com> >>
 
 David K. Storrs C<< <david.storrs@gmail.com> >>
 
+Rafael Kitover C<< <rkitover@cpan.org> >>
 
 =head1 LICENCE AND COPYRIGHT
 
-Copyright (c) 2007-2011, Chris Prather C<< <perigrin@cpan.org> >>. Some rights reserved.
+Copyright (c) 2007-2013, Chris Prather C<< <perigrin@cpan.org> >>. Some rights reserved.
 
 This module is free software; you can redistribute it and/or
 modify it under the same terms as Perl itself. See L<perlartistic>.

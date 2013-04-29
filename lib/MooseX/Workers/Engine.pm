@@ -1,6 +1,7 @@
 package MooseX::Workers::Engine;
 use Moose;
 use POE qw(Wheel::Run);
+use MooseX::Workers::Job ();
 
 has visitor => (
     is       => 'ro',
@@ -150,24 +151,26 @@ sub add_worker {
     }
 
     my $command;
-    if ( blessed($job) && $job->isa('MooseX::Workers::Job') ) {
-        $command = $job->command;
-        $args = $job->args;
-    }
-    else {
-        $command = $job;
+
+    if (not (blessed $job && $job->isa('MooseX::Workers::Job'))) {
+        $job = MooseX::Workers::Job->new(command => $job);
     }
 
-	my @optional_io_filters;
-	push @optional_io_filters, 'StdoutFilter', $self->stdout_filter   if $self->stdout_filter;
-	push @optional_io_filters, 'StderrFilter', $self->stderr_filter   if $self->stderr_filter;
+    $self->_fixup_job_for_win32($job) if $^O eq 'MSWin32';
+
+    $command = $job->command;
+    $args    = $job->args;
+
+    my @optional_io_filters;
+    push @optional_io_filters, 'StdoutFilter', $self->stdout_filter   if $self->stdout_filter;
+    push @optional_io_filters, 'StderrFilter', $self->stderr_filter   if $self->stderr_filter;
 	
-    $args = [$args] unless ref $args eq 'ARRAY';
+    $args = [$args] if defined $args && (not ref $args eq 'ARRAY');
 
     my $wheel = POE::Wheel::Run->new(
         Program     => $command,
-        ProgramArgs => $args,
-		@optional_io_filters,
+        ($args ? (ProgramArgs => $args) : ()),
+	@optional_io_filters,
         StdoutEvent => '_worker_stdout',
         StderrEvent => '_worker_stderr',
         ErrorEvent  => '_worker_error',
@@ -177,17 +180,49 @@ sub add_worker {
 
     $self->set_worker( $wheel->ID => $wheel );
     $self->set_process( $wheel->PID => $wheel->ID );
-    if ( blessed($job) && $job->isa('MooseX::Workers::Job') ) {
-       $job->ID($wheel->ID);
-       $job->PID($wheel->PID);
-       $self->set_job( $wheel->ID => $job );
-       if ($job->timeout) {
-          $heap->{wheel_to_timer}{$wheel->ID} =
-             $kernel->delay_set('_kill_worker', $job->timeout, $wheel->ID);
-       }
-    } 
+
+    $job->ID($wheel->ID);
+    $job->PID($wheel->PID);
+    $self->set_job( $wheel->ID => $job );
+    if ($job->timeout) {
+        $heap->{wheel_to_timer}{$wheel->ID} =
+        $kernel->delay_set('_kill_worker', $job->timeout, $wheel->ID);
+    }
+
+    $job->name($job->PID) unless defined $job->name;
+
     $self->yield( '_worker_started' => $wheel->ID => $job );
     return ( $wheel->ID => $wheel->PID );
+}
+
+sub _fixup_job_for_win32 {
+    my ($self, $job) = @_;
+
+    return unless $^O eq 'MSWin32';
+
+    my $cmd = $job->command;
+
+    if ($job->is_coderef) {
+        # do the binmoding for the user, and set up an INT handler because we kill on timeouts with INT for win32
+        $job->command(sub {
+            binmode STDOUT;
+            binmode STDERR;
+            binmode STDIN;
+            local $SIG{INT} = sub { exit 0 };
+            $cmd->(@_);
+        });
+    }
+    else {
+        # this makes builtins like 'echo' work with Win32::Job which ::Wheel::Run uses
+        require Win32::ShellQuote; # see inc/
+
+        my @args = @{ $job->args || [] };
+
+        my ($new_cmd, @new_args) = Win32::ShellQuote::quote_system_list('cmd', '/c', $cmd, @args);
+
+        $job->command($new_cmd);
+        $job->args(\@new_args);
+    }
 }
 
 sub _kill_worker {
@@ -195,7 +230,8 @@ sub _kill_worker {
     my $job = $self->get_job($wheel_id);
     $self->visitor->worker_timeout( $job )
       if $self->visitor->can('worker_timeout');
-    $self->get_worker($wheel_id)->kill;
+    # we send win32 coderefs an INT, see _fixup_job_for_win32
+    $self->get_worker($wheel_id)->kill($^O eq 'MSWin32' && $job->is_coderef ? 'INT' : ());
 }
 
 sub _start {
@@ -243,7 +279,7 @@ sub _sig_handler {
 sub _worker_stdout {
     my ($self, $input, $wheel_id) = @_[ OBJECT, ARG0, ARG1 ];
     my $job = $self->get_job($wheel_id);
-    $self->visitor->worker_stdout( $input, $job || $wheel_id )
+    $self->visitor->worker_stdout( $input, $job )
       if $self->visitor->can('worker_stdout');
 }
 
@@ -251,7 +287,7 @@ sub _worker_stderr {
     my ($self, $input, $wheel_id) = @_[ OBJECT, ARG0, ARG1 ];
     $wheel_id =~ tr[ -~][]cd;
     my $job = $self->get_job($wheel_id);
-    $self->visitor->worker_stderr( $input, $job || $wheel_id )
+    $self->visitor->worker_stderr( $input, $job )
       if $self->visitor->can('worker_stderr');
 }
 
@@ -268,17 +304,14 @@ sub _worker_done {
     my ($self, $wheel_id, $kernel, $heap) = @_[ OBJECT, ARG0, KERNEL, HEAP ];
     my $job = $self->get_job($wheel_id);
     $kernel->alarm_remove(delete $heap->{wheel_to_timer}{$wheel_id}) if $heap->{wheel_to_timer}{$wheel_id};
-    if ($self->visitor->can('worker_done')) {
-        if ($job) {
-            $self->visitor->worker_done( $job );
-        } else {
-            $self->visitor->worker_done( $wheel_id );
-        }
-    }
+
+    $self->visitor->worker_done( $job )
+        if $self->visitor->can('worker_done');
+
     $self->delete_worker( $wheel_id );
 
     if (my $code = $self->visitor->can('worker_finished')) {
-        $self->visitor->$code($job ? $job : ());
+        $self->visitor->$code($job);
     }
 
     # If we have free workers and processes in queue, then dequeue one of them.
@@ -301,13 +334,8 @@ sub delete_worker {
 sub _worker_started {
     my ( $self, $wheel_id, $command ) = @_[ OBJECT, ARG0, ARG1 ];
     my $job = $self->get_job($wheel_id);
-    if ($self->visitor->can('worker_started')) {
-        if ($job) {
-            $self->visitor->worker_started( $job )
-        } else {
-            $self->visitor->worker_started( $wheel_id, $command )
-        }
-    }
+    $self->visitor->worker_started( $job, $command )
+        if $self->visitor->can('worker_started');
 }
 
 

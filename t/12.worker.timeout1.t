@@ -1,6 +1,4 @@
-use Test::More (
-    $^O eq 'MSWin32' ? (skip_all => 'needs fixing on Win32') : (tests => 6)
-);
+use Test::More tests => 6;
 use lib qw(lib);
 use strict;
 
@@ -51,7 +49,7 @@ use strict;
     sub run { 
         my $job = MooseX::Workers::Job->new(
             timeout => 1,
-            command => sub { if ($^O eq 'MSWin32') { binmode STDOUT; binmode STDERR; } print "HELLO\n"; sleep 2; print STDERR "WORLD\n"; },
+            command => sub { print "HELLO\n"; sleep 2; print STDERR "WORLD\n"; },
         );
         $_[0]->run_command( $job );
         POE::Kernel->run();

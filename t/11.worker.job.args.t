@@ -12,9 +12,6 @@ use lib qw(lib);
     sub worker_stdout {
         my ( $self, $output ) = @_;
 
-        # remove CR
-        $output =~ s/\015\z// if $^O eq 'MSWin32';
-
         ::is( $output, 7, 'STDOUT' );
     }
 
@@ -22,7 +19,7 @@ use lib qw(lib);
     
     sub run { 
         my $job = MooseX::Workers::Job->new(
-           command => ($^O eq 'MSWin32' ? 'cmd /c "echo"' : 'echo'),
+           command => 'echo',
            args    => [ 7 ],
            name    => 'Foo',
         );

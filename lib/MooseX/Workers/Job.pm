@@ -1,14 +1,34 @@
 package MooseX::Workers::Job;
 
 use Moose;
+use overload ();
+use Scalar::Util 'reftype';
+
+use overload
+    '""' => sub { $_[0]->ID }, # stringify to wheel id for backcompat
+    fallback => 1
+;
+
 has 'ID'      => ( is => 'rw', isa => 'Int' );   # POE::Wheel::Run->ID
 has 'PID'     => ( is => 'rw', isa => 'Int' );   # POE::Wheel::Run->PID
 has 'name'    => ( is => 'rw', isa => 'Str' );
-has 'command' => ( is => 'rw', isa => 'CodeRef|Str|ArrayRef' );  # See POE::Wheel::Run POD (Program)
+has 'command' => ( is => 'rw' );  # See POE::Wheel::Run POD (Program)
 has 'args'    => ( is => 'rw', isa => 'ArrayRef' );              # See POE::Wheel::Run POD (ProgramArgs)
 has 'timeout' => ( is => 'rw', isa => 'Int' );   # abort after this many seconds
-no Moose;
 
+sub is_coderef {
+    my $self = shift;
+
+    my $cmd = $self->command;
+
+    return 1 if ref $cmd && (reftype $cmd eq 'CODE' || overload::Method($cmd, '&{}'));
+
+    return undef;
+}
+
+__PACKAGE__->meta->make_immutable;
+
+no Moose;
 
 =head1 NAME
 
@@ -51,8 +71,15 @@ MooseX::Workers::Job objects are convenient if you want to name each
 L<MooseX::Workers> job, or if you want them to timeout (abort) 
 after a certain number of seconds.
 
-=cut
+=head1 METHODS
 
+The accessors, as well as:
+
+=head2 is_coderef
+
+Returns true if the command is some type of coderef, undef otherwise.
+
+=cut
 
 1;
 

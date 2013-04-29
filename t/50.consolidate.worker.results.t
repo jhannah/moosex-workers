@@ -49,8 +49,6 @@ use lib qw(lib);
     sub run { 
         for my $num (0..9) {
             $_[0]->enqueue( sub {
-                if ($^O eq 'MSWin32') { binmode STDOUT; binmode STDERR; }
-
                 print STDOUT @{POE::Filter::Reference->new->put([ {id => $num, result => $num*2} ])};
                 print STDERR "WORLD\n";
             } );

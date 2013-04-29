@@ -1,13 +1,8 @@
-use Test::More;
+use Test::More tests => 14;
 use lib qw(lib);
 use strict;
 
-if ($^O eq 'MSWin32') {
-    plan skip_all => "$^O does not support signals";
-}
-else {
-    plan tests => 14;
-}
+my $SIG = $^O eq 'MSWin32' ? 'INT' : 'TERM';
 
 {
     package Manager;
@@ -38,7 +33,7 @@ else {
     sub worker_started { 
         my ( $self, $job ) = @_;
         ::pass("worker started");
-        kill "TERM", $$;    # Send the worker manager (myself) the TERM signal
+        kill $SIG, $$;    # Send the worker manager (myself) the $SIG signal
     }
     
     sub worker_finished  { 
@@ -48,7 +43,7 @@ else {
 
     sub run { 
         my $job = MooseX::Workers::Job->new(
-            command => sub { if ($^O eq 'MSWin32') { binmode STDOUT; binmode STDERR; } print "HELLO\n"; print STDERR "WORLD\n"; },
+            command => sub { print "HELLO\n"; print STDERR "WORLD\n"; },
         );
         $_[0]->run_command( $job );
         POE::Kernel->run();
@@ -58,18 +53,18 @@ else {
 
 
 # --------------------------------
-# When we have no sig_TERM(), so we should fall back to our vanilla non-POE TERM trap.
+# When we have no sig_$SIG(), so we should fall back to our vanilla non-POE $SIG trap.
 # --------------------------------
-$SIG{TERM} = sub { ::pass('non-POE TERM trapped') };
+$SIG{$SIG} = sub { ::pass("non-POE $SIG trapped") };
 Manager->new()->run();
 
 # --------------------------------
-# But as soon as we define sig_TERM(), we should hit that one and not the Perl one.
+# But as soon as we define sig_$SIG(), we should hit that one and not the Perl one.
 # --------------------------------
-$SIG{TERM} = sub { ::fail('non-POE TERM trapped') };
-Manager->meta->add_method( sig_TERM => sub { 
+$SIG{$SIG} = sub { ::fail("non-POE $SIG trapped") };
+Manager->meta->add_method( "sig_$SIG" => sub { 
    my ( $self, $job ) = @_;
-   ::pass("worker manager trapped the TERM signal");
+   ::pass("worker manager trapped the $SIG signal");
 });
 Manager->new()->run();
 
