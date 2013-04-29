@@ -2,6 +2,8 @@ Revision history for MooseX-Workers
    Full history: https://github.com/jhannah/moosex-workers
 
 {{$NEXT}}
+
+0.21 2013-04-29 01:36:27
   - much better compatibility with Win32
   - wrap non-job workers in an anon job (which stringifies/numifies to wheel ID
     for backcompat)
