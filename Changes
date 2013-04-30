@@ -2,6 +2,8 @@ Revision history for MooseX-Workers
    Full history: https://github.com/jhannah/moosex-workers
 
 {{$NEXT}}
+
+0.22 2013-04-30 14:03:39
   - don't quote external prog/args on Win32 (broke in cmd)
   - skip 10.worker.enqueue.t on Win32 (fails sometimes, cannot reproduce)
 
