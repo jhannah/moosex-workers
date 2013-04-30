@@ -2,6 +2,7 @@ Revision history for MooseX-Workers
    Full history: https://github.com/jhannah/moosex-workers
 
 {{$NEXT}}
+  - check class mutability when adding around for Win32
 
 0.22 2013-04-30 14:03:39
   - don't quote external prog/args on Win32 (broke in cmd)

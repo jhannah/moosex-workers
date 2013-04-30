@@ -233,6 +233,10 @@ sub _fixup_job_for_win32 {
                      || (blessed $filter && $filter->isa('POE::Filter::Line'))
                     ) && $visitor->can($method)) {
 
+                    my $was_immutable = not $visitor_class->meta->is_mutable;
+
+                    $visitor_class->meta->make_mutable if $was_immutable;
+
                     $visitor_class->meta->add_around_method_modifier($method, sub {
                         my ($orig, $self, $input) = splice @_, 0, 3;
 
@@ -240,6 +244,8 @@ sub _fixup_job_for_win32 {
 
                         $self->$orig($input, @_);
                     });
+
+                    $visitor_class->meta->make_immutable if $was_immutable;
                 }
             }
 

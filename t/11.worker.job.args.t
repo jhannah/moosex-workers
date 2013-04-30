@@ -26,6 +26,7 @@ use lib qw(lib);
         $_[0]->spawn( $job );
         POE::Kernel->run();
     }
+    __PACKAGE__->meta->make_immutable;
     no Moose;
 }
 
