@@ -350,9 +350,12 @@ that wraps the coderef.
 You cannot catch a TERM sent to the parent process (see L<perlport/kill>, use
 INT instead.
 
-External programs are run with L<Win32::Job> by L<POE::Wheel::Run>,
-L<Win32::ShellQuote> is used to quote the program and arguments. Use a
-L<MooseX::Workers::Job> with a string program and arrayref args for this.
+External programs are run with L<Win32::Job> by L<POE::Wheel::Run>. They are
+prepended with C<cmd /c> so that builtin cmd commands also work. Use a
+L<MooseX::Workers::Job> with a string program and arrayref args for this. If
+you are using L<POE::Filter::Line> with an external program (which is the
+default if you don't set the filter) the CRs from line ends will be removed
+automatically.
 
 =head1 BUGS AND LIMITATIONS
 

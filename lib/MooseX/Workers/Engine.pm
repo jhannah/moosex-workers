@@ -2,6 +2,8 @@ package MooseX::Workers::Engine;
 use Moose;
 use POE qw(Wheel::Run);
 use MooseX::Workers::Job ();
+use Package::Stash ();
+use Try::Tiny;
 
 has visitor => (
     is       => 'ro',
@@ -214,14 +216,35 @@ sub _fixup_job_for_win32 {
     }
     else {
         # this makes builtins like 'echo' work with Win32::Job which ::Wheel::Run uses
-        require Win32::ShellQuote; # see inc/
+        $job->command('c:\windows\system32\cmd.exe');
+        $job->args(['/c', $cmd, @{ $job->args || [] }]);
 
-        my @args = @{ $job->args || [] };
+        # now translate CRLF -> LF for Filter::Line
+        my $visitor_class = ref $self->visitor;
+        my $visitor_stash = Package::Stash->new($visitor_class);
+        
+        if (not $visitor_stash->has_symbol('$__MX_WORKERS_STDIO_FIXED_UP')) {
+            foreach my $stream (qw/stdout stderr/) {
+                my $visitor = $self->visitor;
+                my $method  = "worker_${stream}";
+                my $filter  = try { $visitor->${\"${stream}_filter"} };
 
-        my ($new_cmd, @new_args) = Win32::ShellQuote::quote_system_list('cmd', '/c', $cmd, @args);
+                if (((not defined $filter)
+                     || (blessed $filter && $filter->isa('POE::Filter::Line'))
+                    ) && $visitor->can($method)) {
 
-        $job->command($new_cmd);
-        $job->args(\@new_args);
+                    $visitor_class->meta->add_around_method_modifier($method, sub {
+                        my ($orig, $self, $input) = splice @_, 0, 3;
+
+                        $input =~ s/\015\z//;
+
+                        $self->$orig($input, @_);
+                    });
+                }
+            }
+
+            $visitor_stash->add_symbol('$__MX_WORKERS_STDIO_FIXED_UP', 1);
+        }
     }
 }
 
