@@ -1,4 +1,5 @@
 package MooseX::Workers::Engine;
+
 use Moose;
 use POE qw(Wheel::Run);
 use MooseX::Workers::Job ();

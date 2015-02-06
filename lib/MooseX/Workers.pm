@@ -1,4 +1,5 @@
 package MooseX::Workers;
+
 use Moose::Role;
 use MooseX::Workers::Job;
 
