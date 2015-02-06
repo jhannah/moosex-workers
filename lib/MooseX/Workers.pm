@@ -328,8 +328,6 @@ See the sig_TERM handler in the SYNOPSIS for an example.
 
 =back
 
-=back
-
 See L<MooseX::Workers::Engine> for more details. 
 Also see L<MooseX::Workers::Job> if you'd like to give your tasks
 names, or set timeouts on them.
