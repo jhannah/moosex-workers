@@ -2,6 +2,8 @@ Revision history for MooseX-Workers
    Full history: https://github.com/jhannah/moosex-workers
 
 {{$NEXT}}
+
+0.24 2015-02-07 14:01:39
   - fix POD error (extra =back) (github #1)
   - add blank line after package statement so that dzil plugin
     PkgVersion doesn't complain (github #1)
