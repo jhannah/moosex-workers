@@ -2,6 +2,11 @@ Revision history for MooseX-Workers
    Full history: https://github.com/jhannah/moosex-workers
 
 {{$NEXT}}
+  - fix POD error (extra =back) (github #1)
+  - add blank line after package statement so that dzil plugin
+    PkgVersion doesn't complain (github #1)
+  - reenable 10.worker.enqueue.t on Win32 to see if there are still
+    problems with smokers
 
 0.23 2013-04-30 18:40:46
   - check class mutability when adding around for Win32
