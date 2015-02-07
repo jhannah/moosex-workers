@@ -2,12 +2,14 @@ use Test::More;
 use lib qw(lib);
 use strict;
 
-if ($^O eq 'MSWin32') {
-    plan skip_all => q|this test often fails on Win32, no idea why|;
-}
-else {
+# Let's try this again on win32 testers...
+#
+#if ($^O eq 'MSWin32') {
+#    plan skip_all => q|this test often fails on Win32, no idea why|;
+#}
+#else {
     plan tests => 252;
-}
+#}
 
 {
     package Manager;
