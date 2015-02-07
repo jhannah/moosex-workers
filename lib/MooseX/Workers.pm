@@ -1,4 +1,5 @@
 package MooseX::Workers;
+
 use Moose::Role;
 use MooseX::Workers::Job;
 
@@ -325,8 +326,6 @@ MooseX::Worker::Engine startup, so any run-time modification of your class
 which 'does' MooseX::Workers is not likely to be detected.
 
 See the sig_TERM handler in the SYNOPSIS for an example.
-
-=back
 
 =back
 
